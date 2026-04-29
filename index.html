@@ -357,14 +357,9 @@ const fmt = {
   },
   date: v => {
     if(!v) return '—';
-    // Ambil hanya YYYY-MM-DD, abaikan jam & timezone agar tidak geser hari
-    const s = String(v);
-    const m = s.match(/(\d{4})-(\d{2})-(\d{2})/);
-    if(m) {
-      const d = new Date(+m[1], +m[2]-1, +m[3]);
-      return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
-    }
-    return s;
+    const m=String(v).match(/(\d{4})-(\d{2})-(\d{2})/);
+    if(m) return new Date(+m[1],+m[2]-1,+m[3]).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    return String(v);
   }
 };
 
@@ -480,8 +475,14 @@ async function upsertMany(tab, rows) {
 
 async function truncateAndInsert(tab, rows) {
   const tbl = getTable(tab);
-  // Delete all then insert
-  await sb.from(tbl).delete().neq('id', 0);
+  if(tbl==='iup'){
+    const statusTarget=tab==='iup_op'?'IUP OP':'IUP Ekspl.';
+    const {error:e}=await sb.from(tbl).delete().eq('status_iup',statusTarget);
+    if(e) throw e;
+  } else {
+    const {error:e}=await sb.from(tbl).delete().neq('id',0);
+    if(e) throw e;
+  }
   if (rows.length > 0) {
     const clean = rows.map(r => { const o={...r}; delete o.id; delete o.created_at; delete o.updated_at; return o; });
     const { error } = await sb.from(tbl).insert(clean);
@@ -956,7 +957,7 @@ function handleFile(file){
   const reader=new FileReader();
   reader.onload=e=>{
     try{
-      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:true});
+      const wb=XLSX.read(new Uint8Array(e.target.result),{type:'array',cellDates:false});
       const sel=$('#ssheet');
       sel.innerHTML=wb.SheetNames.map(n=>{const rows=XLSX.utils.sheet_to_json(wb.Sheets[n],{defval:null,raw:true});uploadedSheets[n]=rows;return`<option value="${n}">${n} (${rows.length} baris)</option>`;}).join('');
       $('#umap').style.display='block';
@@ -975,6 +976,17 @@ function showPreview(name){
   $('#uprev').innerHTML=`<strong>${rows.length} baris · ${keys.length} kolom</strong><br>Kolom: ${keys.join(', ')}<hr style="border-color:#1f2823;margin:7px 0">${prev}${rows.length>3?`<em>...+${rows.length-3} lainnya</em>`:''}`;
   $('#uprev-wrap').style.display='block';
 }
+function excelSerialToStr(serial) {
+  // Excel serial: hari sejak 1 Jan 1900 (dengan bug leap year 1900)
+  const utc_days = Math.floor(serial - 25569);
+  const utc_value = utc_days * 86400;
+  const d = new Date(utc_value * 1000);
+  // Pakai UTC get agar tidak kena offset lokal
+  const yr = d.getUTCFullYear();
+  const mo = String(d.getUTCMonth()+1).padStart(2,'0');
+  const dy = String(d.getUTCDate()).padStart(2,'0');
+  return yr+'-'+mo+'-'+dy;
+}
 function mapRows(rows){
   const cfg=TABS[S.tab];
   const numericDBCols = new Set(['luas_ha','jumlah_rencana','jumlah_jaminan','no']);
@@ -983,17 +995,10 @@ function mapRows(rows){
     cfg.fields.forEach(f=>{
       let val=row[f.k];
       if(val===undefined){const lk=f.k.toLowerCase();const mk=Object.keys(row).find(k=>k.toLowerCase().replace(/[\s_]/g,'')==lk.replace(/[\s_]/g,''));if(mk)val=row[mk];}
-      if((f.type==='number'||numericDBCols.has(f.k))&&val!=null){const n=parseFloat(val);val=isNaN(n)?null:n;}
-      // Konversi Date object dari Excel ke string YYYY-MM-DD (tanpa jam/timezone)
       if(f.type==='date'&&val!=null){
-        if(val instanceof Date){
-          const yr=val.getFullYear(),mo=String(val.getMonth()+1).padStart(2,'0'),dy=String(val.getDate()).padStart(2,'0');
-          val=`${yr}-${mo}-${dy}`;
-        } else {
-          const s=String(val);const dm=s.match(/(\d{4})-(\d{2})-(\d{2})/);
-          if(dm)val=`${dm[1]}-${dm[2]}-${dm[3]}`;
-        }
-      }
+        if(typeof val==='number') val=excelSerialToStr(val);
+        else { const m=String(val).match(/(\d{4})-(\d{2})-(\d{2})/); if(m) val=m[1]+'-'+m[2]+'-'+m[3]; }
+      } else if((f.type==='number'||numericDBCols.has(f.k))&&val!=null){const n=parseFloat(val);val=isNaN(n)?null:n;}
       obj[f.k]=val??null;
     });
     if(S.tab==='iup_op')obj.status_iup='IUP OP';
