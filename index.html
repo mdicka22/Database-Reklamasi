@@ -355,7 +355,19 @@ const fmt = {
     if(v>=1e6)  return 'Rp '+(v/1e6).toFixed(0)+' jt';
     return 'Rp '+new Intl.NumberFormat('id-ID').format(v);
   },
-  date: v => { if(!v)return'—'; const d=new Date(v); if(isNaN(d))return String(v); return d.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'}); }
+  date: v => {
+    if(!v) return '—';
+    // Jika string ISO (YYYY-MM-DD), parse manual agar tidak kena geser UTC→WIB
+    if(typeof v === 'string' && /^\d{4}-\d{2}-\d{2}/.test(v)) {
+      const [yr,mo,dy] = v.split('T')[0].split('-');
+      return new Date(+yr, +mo-1, +dy).toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+    }
+    const d = new Date(v);
+    if(isNaN(d)) return String(v);
+    // Koreksi timezone offset agar tanggal tidak geser mundur 1 hari di WIB
+    const adjusted = new Date(d.getTime() + d.getTimezoneOffset() * 60000);
+    return adjusted.toLocaleDateString('id-ID',{day:'2-digit',month:'short',year:'numeric'});
+  }
 };
 
 let toastTimer;
