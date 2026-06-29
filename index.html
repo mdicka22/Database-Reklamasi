@@ -6,380 +6,526 @@
 <title>Dashboard Reklamasi Tambang Aceh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Martian+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
-  --bg:#e9f1f8;--bg-el:#edf3f9;--bg-card:#f8fbff;--bg-hov:#eef6ff;
-  --bdr:#d9e5f0;--bdr-s:#b8c8d8;
-  --tx:#0d1730;--tx-m:#526783;--tx-d:#8da0b7;
-  --ac:#1559ff;--ac-s:rgba(21,89,255,.1);--ac-d:rgba(21,89,255,.35);
-  --gold:#f08a12;--copper:#f05a22;--rose:#dc2626;--blue:#0788c6;
-  --grad:linear-gradient(145deg,#2f73ff,#1148d8);
-  --shadow:0 9px 20px rgba(17,35,64,.085), inset 0 1px 0 rgba(255,255,255,.82);
+  --bg:#f4f6f9;--bg-card:#ffffff;--bg-hov:#f8fafc;
+  --bdr:#e5e7eb;--bdr-s:#d1d5db;
+  --tx:#1f2937;--tx-m:#6b7280;--tx-d:#9ca3af;
+  --ac:#2563eb;--ac-s:rgba(37,99,235,.08);--ac-d:rgba(37,99,235,.25);
+  --gold:#d97706;--rose:#dc2626;--green:#059669;
+  --radius:10px;
+  --shadow:0 1px 3px rgba(0,0,0,.06);
+  --shadow-lg:0 4px 12px rgba(0,0,0,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html,body{background:var(--bg);color:var(--tx);font-family:'Outfit',system-ui,sans-serif;font-size:13.5px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;}
-body{background:linear-gradient(135deg,#dce8f4 0%,#f7fbff 44%,#e8f1f8 100%);}
-.container{min-height:100vh;padding:0;}
-.app-shell{display:grid;grid-template-columns:218px minmax(0,1fr);min-height:100vh;}
-.sidebar{position:sticky;top:0;height:100vh;background:linear-gradient(180deg,#072a5f 0%,#061d44 62%,#062656 100%);color:#fff;padding:24px 12px 20px;display:flex;flex-direction:column;box-shadow:10px 0 24px rgba(5,18,42,.2);overflow:hidden;}
-.sidebar::after{content:'';position:absolute;left:-42px;right:-32px;bottom:86px;height:132px;background:linear-gradient(145deg,rgba(23,98,216,.22),rgba(6,29,68,.02));clip-path:polygon(0 72%,17% 60%,32% 76%,50% 45%,66% 76%,83% 57%,100% 80%,100% 100%,0 100%);pointer-events:none;}
-.side-brand{display:flex;align-items:center;gap:11px;padding:0 10px 22px;border-bottom:1px solid rgba(190,213,255,.18);position:relative;z-index:1;}
-.crest{width:50px;height:58px;border-radius:8px;background:url('aceh-logo.png') center/contain no-repeat;filter:drop-shadow(0 4px 7px rgba(0,0,0,.18));}
-.side-title{font-weight:800;font-size:18px;line-height:1.08;letter-spacing:.01em;}
-.side-title span{display:block;font-weight:600;font-size:14px;opacity:.92;}
-.side-nav{display:flex;flex-direction:column;gap:8px;margin-top:20px;position:relative;z-index:1;}
-.side-link{border:0;background:transparent;color:rgba(255,255,255,.78);border-radius:10px;padding:9px 11px;display:flex;align-items:center;gap:11px;text-align:left;font:600 13px/1.2 'Outfit',system-ui,sans-serif;cursor:pointer;transition:background .18s,color .18s,box-shadow .18s,transform .18s;}
-.side-link:hover{background:rgba(255,255,255,.08);color:#fff;}
-.side-link.active{background:linear-gradient(145deg,#2a72f8,#164ac8);color:#fff;box-shadow:0 5px 12px rgba(7,35,96,.22), inset 0 1px 0 rgba(255,255,255,.16);transform:translateX(1px);}
-.side-ico{width:32px;height:32px;display:grid;place-items:center;flex:none;border-radius:8px;background:rgba(255,255,255,.07);transition:background .2s,transform .2s;}
-.side-link:hover .side-ico{background:rgba(255,255,255,.13);}
-.side-link.active .side-ico{background:rgba(255,255,255,.2);}
-.side-ico svg{width:17px;height:17px;fill:none;stroke:rgba(255,255,255,.7);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;transition:stroke .2s,transform .3s;}
-.side-link.active .side-ico svg,.side-link:hover .side-ico svg{stroke:#fff;}
-@keyframes pulse-dot{0%,100%{r:2}50%{r:3.5}}
-@keyframes spin-slow{to{transform:rotate(360deg)}}
-@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
-@keyframes dash-in{to{stroke-dashoffset:0}}
-@keyframes glow{0%,100%{opacity:.5}50%{opacity:1}}
-.side-link.active .anim-bob{animation:bob 2s ease-in-out infinite}
-.side-link.active .anim-spin{animation:spin-slow 4s linear infinite;transform-box:fill-box;transform-origin:center}
-.side-link.active .anim-dash{stroke-dasharray:60;stroke-dashoffset:60;animation:dash-in .6s .1s ease forwards}
-.side-link.active .anim-pulse{animation:pulse-dot 1.6s ease-in-out infinite}
-.side-link.active .anim-glow{animation:glow 1.8s ease-in-out infinite}
-.side-user{margin-top:auto;border:1px solid rgba(190,213,255,.16);background:rgba(6,26,61,.46);border-radius:12px;padding:10px;display:flex;align-items:center;gap:9px;position:relative;z-index:1;}
-.avatar{width:34px;height:34px;border-radius:50%;background:var(--grad);display:grid;place-items:center;font-weight:800;font-size:13px;box-shadow:0 4px 10px rgba(0,0,0,.18);}
-.side-user strong{display:block;font-size:12px;line-height:1.15;}
-.side-user span{display:block;font-size:10.5px;color:rgba(255,255,255,.62);margin-top:2px;}
-.main-panel{min-width:0;margin:0;padding:20px 26px 40px;border-radius:24px 0 0 24px;background:radial-gradient(circle at 86% 8%,rgba(255,255,255,.9),transparent 24%),linear-gradient(145deg,rgba(255,255,255,.72),rgba(238,246,253,.9));box-shadow:inset 1px 0 0 rgba(255,255,255,.88);}
+html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;}
+
+/* ==================== LOGIN ==================== */
+#login-screen{position:fixed;inset:0;z-index:1000;display:flex;background:#0b1a2e;}
+.login-hero{flex:1;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;}
+.login-hero-img{position:absolute;inset:0;background:url('hero-bg.jpg') center/cover no-repeat;filter:brightness(.7);}
+.login-hero-overlay{position:relative;z-index:1;padding:48px 48px 56px;background:linear-gradient(0deg,rgba(11,26,46,.85) 0%,rgba(11,26,46,.4) 60%,transparent 100%);}
+.login-hero-overlay h1{font-size:32px;font-weight:700;color:#fff;line-height:1.25;margin-bottom:12px;}
+.login-hero-overlay h1 span{color:#4ade80;}
+.login-hero-overlay p{font-size:15px;color:rgba(255,255,255,.75);line-height:1.6;max-width:480px;}
+.login-hero-badges{display:flex;gap:24px;margin-top:24px;flex-wrap:wrap;}
+.login-hero-badges .hb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.8);font-weight:500;}
+.login-hero-badges .hb-ico{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:15px;}
+.login-side{width:460px;flex:none;background:linear-gradient(180deg,#f0f5fa 0%,#e8eef7 50%,#dfe8f3 100%);display:flex;flex-direction:column;justify-content:center;padding:48px 40px;overflow-y:auto;}
+.login-side-inner{width:100%;max-width:380px;margin:0 auto;}
+.login-logo{width:56px;height:56px;margin-bottom:20px;background:url('aceh-logo-nobg.png') center/contain no-repeat;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1));}
+.login-header h1{font-size:22px;font-weight:700;color:var(--tx);margin-bottom:4px;line-height:1.3;}
+.login-header p{font-size:13px;color:var(--tx-m);font-weight:400;margin-bottom:28px;}
+.login-card{background:rgba(255,255,255,.75);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.6);border-radius:14px;padding:28px;box-shadow:0 4px 20px rgba(0,0,0,.06);}
+.login-card h2{font-size:15px;font-weight:600;margin-bottom:18px;color:var(--tx);}
+.role-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
+.role-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--bdr);border-radius:10px;background:#fff;cursor:pointer;transition:all .15s;text-align:left;}
+.role-btn:hover{border-color:var(--ac-d);background:var(--ac-s);}
+.role-btn.selected{border-color:var(--ac);background:var(--ac-s);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.role-icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex:none;}
+.role-icon.admin{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;}
+.role-icon.viewer{background:linear-gradient(135deg,#6b7280,#4b5563);color:#fff;}
+.role-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
+.role-info h3{font-size:14px;font-weight:600;color:var(--tx);}
+.role-info p{font-size:12px;color:var(--tx-m);margin-top:2px;}
+.login-field{margin-bottom:16px;display:none;}
+.login-field.show{display:block;}
+.login-field label{display:block;font-size:11.5px;font-weight:500;color:var(--tx-m);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
+.login-field input{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:8px;font-family:inherit;font-size:14px;color:var(--tx);background:var(--bg);transition:border-color .15s;}
+.login-field input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.login-submit{width:100%;padding:12px;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ac);color:#fff;}
+.login-submit:hover{background:#1d4ed8;}
+.login-submit:disabled{opacity:.5;cursor:not-allowed;}
+.login-error{font-size:12px;color:var(--rose);margin-top:10px;display:none;}
+.login-footer{margin-top:32px;padding-top:20px;border-top:1px solid var(--bdr);font-size:11.5px;color:var(--tx-d);line-height:1.5;}
+@media(max-width:900px){
+  .login-hero{display:none;}
+  .login-side{width:100%;padding:32px 24px;}
+}
+
+/* ==================== LOADING ==================== */
+#loading{position:fixed;inset:0;background:var(--bg);z-index:999;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;}
+#loading.show{display:flex;}
+#loading .load-text{font-weight:600;font-size:15px;color:var(--tx-m);}
+#loading .load-sub{font-family:'JetBrains Mono',monospace;font-size:10.5px;color:var(--tx-d);letter-spacing:.04em;}
+.load-bar{width:180px;height:2px;background:var(--bdr);border-radius:1px;overflow:hidden;}
+.load-bar-inner{height:100%;background:var(--ac);border-radius:1px;animation:loadbar 1.5s ease-in-out infinite;}
+@keyframes loadbar{0%{width:0;margin-left:0;}50%{width:60%;margin-left:20%;}100%{width:0;margin-left:100%;}}
+
+/* ==================== SHELL ==================== */
+.container{min-height:100vh;padding:0;display:none;}
+.app-shell{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:100vh;}
+
+/* ==================== SIDEBAR ==================== */
+.sidebar{position:sticky;top:0;height:100vh;background:#111827;color:#fff;padding:20px 10px 16px;display:flex;flex-direction:column;overflow-y:auto;}
+.side-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
+.crest{width:36px;height:42px;border-radius:6px;background:url('aceh-logo-nobg.png') center/contain no-repeat;flex:none;filter:brightness(1.1);}
+.side-title{font-weight:700;font-size:14px;line-height:1.15;letter-spacing:.01em;}
+.side-title span{display:block;font-weight:500;font-size:11px;opacity:.6;margin-top:1px;}
+.side-nav{display:flex;flex-direction:column;gap:2px;margin-top:14px;}
+.side-link{border:0;background:transparent;color:rgba(255,255,255,.55);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px;text-align:left;font:500 12.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;transition:all .12s;}
+.side-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
+.side-link.active{background:rgba(37,99,235,.2);color:#fff;}
+.side-ico{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:7px;background:rgba(255,255,255,.06);}
+.side-link.active .side-ico{background:rgba(37,99,235,.35);}
+.side-ico svg{width:15px;height:15px;fill:none;stroke:rgba(255,255,255,.5);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
+.side-link.active .side-ico svg,.side-link:hover .side-ico svg{stroke:rgba(255,255,255,.9);}
+.side-user{margin-top:auto;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);border-radius:10px;padding:10px;display:flex;align-items:center;gap:9px;}
+.avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:11px;flex:none;}
+.avatar.admin-av{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;}
+.avatar.viewer-av{background:linear-gradient(135deg,#6b7280,#4b5563);color:#fff;}
+.side-user strong{display:block;font-size:11.5px;line-height:1.15;font-weight:600;}
+.side-user span{display:block;font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;}
+.btn-logout{margin-top:8px;width:100%;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:7px;background:transparent;color:rgba(255,255,255,.45);font:500 10.5px 'Inter',sans-serif;cursor:pointer;transition:all .12s;}
+.btn-logout:hover{border-color:rgba(220,38,38,.4);color:rgba(220,38,38,.8);background:rgba(220,38,38,.06);}
+
+/* ==================== MAIN ==================== */
+.main-panel{min-width:0;padding:20px 24px 40px;background:var(--bg);overflow-y:auto;}
 .view-section{display:none;}
 .view-section.active{display:block;}
 
-/* LOADING SCREEN */
-#loading{position:fixed;inset:0;background:var(--bg);z-index:999;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;}
-#loading .logo-big{width:56px;height:56px;background:var(--grad);border-radius:14px;display:grid;place-items:center;font-family:'Outfit',system-ui,sans-serif;font-weight:800;color:#fff;font-size:26px;box-shadow:0 4px 16px rgba(37,99,235,.22);animation:pulse-logo 1.5s ease-in-out infinite;}
-@keyframes pulse-logo{0%,100%{box-shadow:0 4px 12px rgba(37,99,235,.18);}50%{box-shadow:0 6px 20px rgba(37,99,235,.3);}}
-#loading .load-text{font-family:'Outfit',system-ui,sans-serif;font-weight:700;font-size:18px;color:var(--tx-m);}
-#loading .load-sub{font-family:'Martian Mono',monospace;font-size:11px;color:var(--tx-d);letter-spacing:.08em;}
-.load-bar{width:200px;height:2px;background:var(--bdr);border-radius:1px;overflow:hidden;}
-.load-bar-inner{height:100%;background:var(--ac);border-radius:1px;animation:loadbar 1.5s ease-in-out infinite;}
-@keyframes loadbar{0%{width:0;margin-left:0;}50%{width:60%;margin-left:20%;}100%{width:0;margin-left:100%;};}
-
-/* HEADER */
-.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:16px;margin-bottom:24px;border-bottom:1px solid var(--bdr);}
-.hbrand{display:flex;align-items:center;gap:14px;}
-.logo{width:66px;height:66px;background:var(--grad);border-radius:17px;display:grid;place-items:center;font-family:'Outfit',system-ui,sans-serif;font-weight:800;color:#fff;font-size:32px;box-shadow:0 7px 16px rgba(21,89,255,.2), inset 0 0 0 4px rgba(255,255,255,.18);}
-.hbrand h1{font-family:'Outfit',system-ui,sans-serif;font-weight:800;font-size:28px;letter-spacing:0;line-height:1.08;}
-.hbrand h1 em{font-style:normal;font-weight:700;color:var(--ac);}
-.hbrand .sub{font-size:14px;color:#334463;margin-top:5px;font-weight:500;}
-.hmeta{text-align:left;font-size:10.5px;font-family:'Martian Mono',monospace;background:rgba(255,255,255,.78);border:1px solid rgba(209,222,235,.82);border-radius:16px;padding:14px 18px;min-width:238px;display:grid;grid-template-columns:34px 1fr auto;gap:11px;align-items:center;box-shadow:var(--shadow);backdrop-filter:blur(10px);}
-.hmeta::before{content:'';width:34px;height:34px;border-radius:10px;background:linear-gradient(145deg,#eff6ff,#d9e7f8);box-shadow:inset 0 1px 0 #fff;display:block;grid-row:1/4;}
-.live{display:inline-flex;align-items:center;gap:8px;color:var(--ac);font-weight:700;}
-.dot{width:6px;height:6px;border-radius:50%;background:var(--ac);box-shadow:0 0 6px var(--ac);animation:pulse 2s ease-in-out infinite;}
-.dot.err{background:var(--rose);box-shadow:0 0 6px var(--rose);}
-.dot.loading{background:var(--gold);box-shadow:0 0 6px var(--gold);}
-@keyframes pulse{50%{opacity:.3;}}
-.conn-status{font-size:10px;color:var(--tx-d);letter-spacing:.08em;text-transform:uppercase;}
-.conn-status.ok{color:var(--ac);}
+/* ==================== HEADER ==================== */
+.header{display:flex;justify-content:space-between;align-items:center;padding-bottom:14px;margin-bottom:20px;border-bottom:1px solid var(--bdr);}
+.hbrand h1{font-size:18px;font-weight:700;letter-spacing:-.01em;}
+.hbrand h1 em{font-style:normal;color:var(--ac);font-weight:700;}
+.hbrand .sub{font-size:12px;color:var(--tx-m);margin-top:2px;font-weight:400;}
+.hmeta{text-align:right;font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--tx-d);}
+.live{display:inline-flex;align-items:center;gap:6px;font-weight:500;}
+.dot{width:5px;height:5px;border-radius:50%;background:var(--green);box-shadow:0 0 4px var(--green);}
+.dot.err{background:var(--rose);box-shadow:0 0 4px var(--rose);}
+.conn-status{font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;margin-top:2px;}
+.conn-status.ok{color:var(--green);}
 .conn-status.err{color:var(--rose);}
 
-/* KPI */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:18px;margin-bottom:22px;}
-.kpi{background:linear-gradient(145deg,rgba(255,255,255,.94),rgba(246,249,253,.9));border:1px solid rgba(210,224,237,.9);border-radius:15px;padding:25px 20px 16px 84px;min-height:124px;position:relative;overflow:hidden;transition:border-color .2s,transform .2s,box-shadow .2s;box-shadow:var(--shadow);}
-.kpi:hover{border-color:var(--bdr-s);transform:translateY(-1px);box-shadow:0 12px 26px rgba(17,35,64,.12), inset 0 1px 0 rgba(255,255,255,.86);}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--kc,var(--ac));opacity:1;}
-.kpi::after{content:attr(data-icon);position:absolute;left:20px;top:32px;width:48px;height:48px;border-radius:12px;background:linear-gradient(145deg,var(--kc,var(--ac)),color-mix(in srgb,var(--kc,var(--ac)) 88%,#08214c));display:grid;place-items:center;color:#fff;font-size:21px;font-weight:800;box-shadow:0 5px 10px color-mix(in srgb,var(--kc,var(--ac)) 18%,transparent), inset 0 1px 0 rgba(255,255,255,.22);}
-.kpi-label{font-size:10.5px;letter-spacing:.08em;text-transform:uppercase;color:#1e2b44;margin-bottom:7px;font-family:'Martian Mono',monospace;font-weight:700;}
-.kpi-value{font-family:'Outfit',system-ui,sans-serif;font-size:32px;font-weight:800;letter-spacing:0;line-height:1;}
-.kpi-value .unit{font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:var(--tx-m);margin-left:4px;}
-.kpi-detail{margin-top:12px;padding-top:10px;border-top:1px dashed var(--bdr);font-size:12.5px;color:var(--tx-m);display:flex;justify-content:space-between;font-family:'Outfit',system-ui,sans-serif;}
+/* ==================== KPI ==================== */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
+.kpi{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px 16px 12px;position:relative;overflow:hidden;transition:box-shadow .15s;box-shadow:var(--shadow);}
+.kpi:hover{box-shadow:var(--shadow-lg);}
+.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--kc,var(--ac));}
+.kpi-label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx-m);margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-weight:500;}
+.kpi-value{font-size:24px;font-weight:700;line-height:1;}
+.kpi-value .unit{font-size:10px;font-weight:500;color:var(--tx-m);margin-left:3px;}
+.kpi-detail{margin-top:10px;padding-top:8px;border-top:1px dashed var(--bdr);font-size:11.5px;color:var(--tx-m);display:flex;justify-content:space-between;}
 .kpi-detail strong{color:var(--tx);font-weight:500;}
 
-/* CHARTS */
-.charts-grid{display:grid;grid-template-columns:1.08fr 1fr 1fr;gap:18px;margin-bottom:28px;}
-.chart-card{background:linear-gradient(145deg,rgba(255,255,255,.96),rgba(246,249,253,.93));border:1px solid rgba(210,224,237,.9);border-radius:15px;padding:20px 22px;min-height:338px;display:flex;flex-direction:column;box-shadow:var(--shadow);position:relative;overflow:hidden;}
-.chart-card::after{content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:linear-gradient(180deg,rgba(255,255,255,.36),transparent 42%);}
-.chart-card::before{content:attr(data-icon);width:40px;height:40px;border-radius:10px;background:var(--grad);display:grid;place-items:center;color:#fff;font-weight:800;font-size:18px;box-shadow:0 4px 10px rgba(21,89,255,.16);margin-bottom:8px;}
-.chart-title{font-family:'Outfit',system-ui,sans-serif;font-size:16px;font-weight:700;margin-bottom:2px;}
-.chart-sub{font-size:9.5px;color:var(--tx-d);letter-spacing:.05em;text-transform:uppercase;font-family:'Martian Mono',monospace;margin-bottom:12px;}
-.chart-body{flex:1;position:relative;min-height:232px;}
+/* ==================== CHARTS ==================== */
+.charts-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px;margin-bottom:24px;}
+.chart-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px 18px;min-height:300px;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+.chart-title{font-size:13.5px;font-weight:600;margin-bottom:1px;}
+.chart-sub{font-size:9px;color:var(--tx-d);letter-spacing:.04em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:10px;}
+.chart-body{flex:1;position:relative;min-height:220px;}
 
-/* SECTION TITLE */
-.sec{font-family:'Outfit',system-ui,sans-serif;font-size:19px;font-weight:800;margin-bottom:14px;display:flex;align-items:baseline;gap:10px;}
+/* ==================== SECTION TITLE ==================== */
+.sec{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:baseline;gap:8px;}
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
-.sec .hint{font-size:11px;font-family:'Martian Mono',monospace;color:var(--tx-d);}
+.sec .hint{font-size:10px;font-family:'JetBrains Mono',monospace;color:var(--tx-d);font-weight:400;}
 
-/* TABS */
+/* ==================== TABS ==================== */
 .tabs{display:none;}
-.tab{background:transparent;border:none;padding:10px 18px;color:var(--tx-m);font-family:inherit;font-size:13px;font-weight:500;cursor:pointer;position:relative;transition:color .2s;}
+.tab{background:transparent;border:none;padding:8px 14px;color:var(--tx-m);font-family:inherit;font-size:12px;font-weight:500;cursor:pointer;position:relative;transition:color .15s;}
 .tab:hover{color:var(--tx);}
 .tab.active{color:var(--ac);}
 .tab.active::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:2px;background:var(--ac);}
-.badge{display:inline-block;background:var(--bg-hov);color:var(--tx-d);padding:2px 7px;border-radius:10px;font-size:10px;margin-left:6px;font-family:'Martian Mono',monospace;}
+.badge{display:inline-block;background:var(--bg);color:var(--tx-d);padding:1px 6px;border-radius:8px;font-size:9.5px;margin-left:4px;font-family:'JetBrains Mono',monospace;}
 .tab.active .badge{background:var(--ac-s);color:var(--ac);}
 
-/* TOOLBAR */
-.toolbar{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:14px;}
-.tl{display:flex;gap:10px;align-items:center;flex-wrap:wrap;flex:1;}
-.ta{display:flex;gap:8px;}
-.sbox{min-width:200px;max-width:300px;flex:1;position:relative;}
-.sbox input{width:100%;background:var(--bg-card);border:1px solid var(--bdr);border-radius:8px;padding:9px 13px 9px 36px;color:var(--tx);font-family:inherit;font-size:13px;transition:border-color .2s;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-.sbox input:focus{outline:none;border-color:var(--ac-d);box-shadow:0 0 0 3px var(--ac-s);}
+/* ==================== TOOLBAR ==================== */
+.toolbar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;}
+.tl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;flex:1;}
+.ta{display:flex;gap:6px;}
+.sbox{min-width:180px;max-width:280px;flex:1;position:relative;}
+.sbox input{width:100%;background:var(--bg-card);border:1px solid var(--bdr);border-radius:7px;padding:7px 11px 7px 32px;color:var(--tx);font-family:inherit;font-size:12.5px;transition:border-color .15s;}
+.sbox input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);}
 .sbox input::placeholder{color:var(--tx-d);}
-.sbox svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--tx-d);}
-.fsel{background:var(--bg-card);border:1px solid var(--bdr);border-radius:8px;padding:9px 13px;color:var(--tx);font-family:inherit;font-size:12.5px;cursor:pointer;min-width:120px;box-shadow:0 1px 2px rgba(0,0,0,.04);}
-.fsel:focus{outline:none;border-color:var(--ac-d);box-shadow:0 0 0 3px var(--ac-s);}
-.btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--bdr);border-radius:8px;padding:8px 14px;font-family:inherit;font-size:12px;cursor:pointer;transition:all .18s;white-space:nowrap;}
+.sbox svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--tx-d);}
+.fsel{background:var(--bg-card);border:1px solid var(--bdr);border-radius:7px;padding:7px 10px;color:var(--tx);font-family:inherit;font-size:11.5px;cursor:pointer;min-width:110px;}
+.fsel:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);}
+.btn{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--bdr);border-radius:7px;padding:6px 12px;font-family:inherit;font-size:11.5px;cursor:pointer;transition:all .12s;white-space:nowrap;font-weight:500;}
 .btn:disabled{opacity:.4;cursor:not-allowed;}
-.btn-ghost{background:var(--bg-card);color:var(--tx-m);box-shadow:0 1px 2px rgba(0,0,0,.04);}
+.btn-ghost{background:var(--bg-card);color:var(--tx-m);}
 .btn-ghost:hover:not(:disabled){border-color:var(--bdr-s);color:var(--tx);}
-.btn-green{background:var(--ac);border-color:var(--ac);color:#fff;box-shadow:0 2px 6px rgba(37,99,235,.25);}
+.btn-green{background:var(--ac);border-color:var(--ac);color:#fff;}
 .btn-green:hover:not(:disabled){background:#1d4ed8;border-color:#1d4ed8;}
-.btn-upload{background:var(--bg-card);border:2px dashed var(--bdr-s);color:var(--tx-m);}
+.btn-upload{background:var(--bg-card);border:1.5px dashed var(--bdr-s);color:var(--tx-m);}
 .btn-upload:hover{border-color:var(--ac-d);color:var(--ac);background:var(--ac-s);}
 .btn-danger{background:transparent;border-color:var(--bdr);color:var(--rose);}
-.btn-danger:hover:not(:disabled){border-color:var(--rose);background:rgba(220,38,38,.08);}
+.btn-danger:hover:not(:disabled){border-color:var(--rose);background:rgba(220,38,38,.06);}
 
-/* TABLE */
-.twrap{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
+/* ==================== TABLE ==================== */
+.twrap{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
 .tscroll{overflow-x:auto;max-height:680px;overflow-y:auto;}
-.tscroll::-webkit-scrollbar{width:9px;height:9px;}
-.tscroll::-webkit-scrollbar-track{background:var(--bg-el);}
-.tscroll::-webkit-scrollbar-thumb{background:var(--bdr-s);border-radius:4px;}
-table{width:100%;border-collapse:collapse;font-size:12.5px;}
-thead{position:sticky;top:0;z-index:10;background:var(--bg-el);}
-th{text-align:left;padding:13px 14px;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-m);font-weight:600;font-family:'Martian Mono',monospace;border-bottom:1px solid var(--bdr);white-space:nowrap;cursor:pointer;user-select:none;}
+.tscroll::-webkit-scrollbar{width:7px;height:7px;}
+.tscroll::-webkit-scrollbar-track{background:var(--bg);}
+.tscroll::-webkit-scrollbar-thumb{background:var(--bdr-s);border-radius:3px;}
+table{width:100%;border-collapse:collapse;font-size:13px;}
+thead{position:sticky;top:0;z-index:10;background:var(--bg);}
+th{text-align:left;padding:10px 12px;font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx-m);font-weight:600;font-family:'JetBrains Mono',monospace;border-bottom:1.5px solid var(--bdr);white-space:nowrap;cursor:pointer;user-select:none;}
 th:hover{color:var(--tx);}
-th.sa::after{content:' ↕';opacity:.3;font-size:9px;}
-th.asc::after{content:' ↑';opacity:1;color:var(--ac);}
-th.dsc::after{content:' ↓';opacity:1;color:var(--ac);}
-td{padding:11px 14px;border-bottom:1px solid var(--bdr);color:var(--tx);vertical-align:top;}
+th.sa::after{content:' \2195';opacity:.3;font-size:9px;}
+th.asc::after{content:' \2191';opacity:1;color:var(--ac);}
+th.dsc::after{content:' \2193';opacity:1;color:var(--ac);}
+td{padding:9px 12px;border-bottom:1px solid var(--bdr);color:var(--tx);vertical-align:top;font-size:13px;line-height:1.5;}
 tr:last-child td{border-bottom:none;}
-tbody tr{transition:background .1s;}
+tbody tr{transition:background .08s;}
 tbody tr:hover{background:var(--bg-hov);}
-tr.group-header td{background:#f8fafc;border-top:1px solid var(--bdr);}
+tr.group-header{cursor:pointer;}
+tr.group-header td{background:#f8fafc;border-top:1.5px solid var(--bdr);}
 tr.group-header:first-child td{border-top:none;}
-.group-name{font-weight:600;font-size:13px;}
-tr.child-row td:first-child{padding-left:28px;font-size:11.5px;}
-.year-tag{display:inline-block;padding:2px 8px;border-radius:4px;background:var(--ac-s);color:var(--ac);font-family:'Martian Mono',monospace;font-size:10.5px;font-weight:500;}
-.year-input{background:transparent;border:1px dashed var(--bdr-s);border-radius:5px;padding:2px 8px;color:var(--tx-m);font-family:'Martian Mono',monospace;font-size:10.5px;width:110px;transition:all .18s;outline:none;}
-.year-input:hover{border-color:var(--bdr-s);background:var(--bg-hov);}
-.year-input:focus{border-color:var(--ac-d);background:var(--bg-card);color:var(--tx);border-style:solid;}
-.year-input.saving{opacity:.5;pointer-events:none;}
-.year-input.saved{border-color:var(--ac);color:var(--ac);}
-.nm{font-weight:500;}
-.nm-sub{display:block;font-size:10.5px;color:var(--tx-d);margin-top:2px;font-family:'Martian Mono',monospace;}
-.num{font-family:'Martian Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;}
-.chip{display:inline-block;padding:3px 9px;border-radius:5px;font-size:10.5px;font-weight:500;font-family:'Martian Mono',monospace;white-space:nowrap;}
-.c-op{background:rgba(37,99,235,.1);color:#1d4ed8;}
-.c-eks{background:rgba(217,119,6,.1);color:#b45309;}
-.c-ada{background:rgba(22,163,74,.1);color:#15803d;}
-.c-tdk{background:rgba(220,38,38,.1);color:#b91c1c;}
-.c-neu{background:var(--bg-hov);color:var(--tx-m);}
-.date-c{color:var(--tx-m);font-size:11.5px;font-family:'Martian Mono',monospace;}
-.empty{padding:56px 20px;text-align:center;color:var(--tx-d);}
-.empty .big{font-family:'Outfit',system-ui,sans-serif;font-weight:700;font-size:17px;color:var(--tx-m);margin-bottom:5px;}
-.tfooter{padding:11px 16px;border-top:1px solid var(--bdr);background:var(--bg-el);font-size:11px;color:var(--tx-m);font-family:'Martian Mono',monospace;display:flex;justify-content:space-between;flex-wrap:wrap;gap:6px;}
+tr.group-header:hover td{background:#f0f4fa;}
+.group-chevron{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;font-size:11px;color:var(--tx-d);transition:transform .2s;margin-right:6px;vertical-align:middle;}
+tr.group-header.expanded .group-chevron{transform:rotate(90deg);}
+.group-name{font-family:'Roboto Slab',Georgia,serif;font-weight:700;font-size:14.5px;color:var(--tx);letter-spacing:.01em;vertical-align:middle;}
+tr.child-row{display:none;}
+tr.child-row.show{display:table-row;}
+tr.child-row td:first-child{padding-left:24px;}
+tr.child-row td{font-family:'Roboto Slab',Georgia,serif;font-size:12.5px;line-height:1.6;}
+.pagi{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;font-size:12px;font-family:'JetBrains Mono',monospace;}
+.pagi button{padding:5px 12px;border:1px solid var(--bdr);border-radius:6px;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer;color:var(--tx);transition:all .12s;}
+.pagi button:hover:not(:disabled){border-color:var(--ac);color:var(--ac);background:var(--ac-s);}
+.pagi button.active{background:var(--ac);color:#fff;border-color:var(--ac);}
+.pagi button:disabled{opacity:.4;cursor:not-allowed;}
+.pagi-info{font-size:11px;color:var(--tx-m);}
+.year-tag{display:inline-block;padding:2px 9px;border-radius:5px;background:var(--ac-s);color:var(--ac);font-family:'JetBrains Mono',monospace;font-size:11px;font-weight:500;}
+.nm{font-weight:500;font-size:13.5px;}
+.nm-sub{display:block;font-size:11px;color:var(--tx-d);margin-top:2px;font-family:'JetBrains Mono',monospace;}
+.num{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:12.5px;}
+.chip{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
+.c-op{background:rgba(37,99,235,.08);color:#1d4ed8;}
+.c-eks{background:rgba(217,119,6,.08);color:#b45309;}
+.c-ada{background:rgba(5,150,105,.08);color:#047857;}
+.c-tdk{background:rgba(220,38,38,.08);color:#b91c1c;}
+.c-neu{background:var(--bg);color:var(--tx-d);}
+.date-c{color:var(--tx-m);font-size:11px;font-family:'JetBrains Mono',monospace;}
+.empty{padding:48px 20px;text-align:center;color:var(--tx-d);}
+.empty .big{font-weight:600;font-size:14px;color:var(--tx-m);margin-bottom:4px;}
+.tfooter{padding:8px 14px;border-top:1px solid var(--bdr);background:var(--bg);font-size:10.5px;color:var(--tx-m);font-family:'JetBrains Mono',monospace;display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;}
 .tfooter strong{color:var(--ac);font-weight:500;}
-.ract{display:flex;gap:3px;opacity:0;transition:opacity .15s;}
+.ract{display:flex;gap:2px;opacity:0;transition:opacity .1s;}
 tr:hover .ract{opacity:1;}
-.ra{width:27px;height:27px;border-radius:5px;border:none;background:transparent;color:var(--tx-d);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;}
-.ra:hover{background:var(--bg-el);color:var(--tx);}
-.ra.del:hover{background:rgba(220,38,38,.1);color:var(--rose);}
-
-/* SAVING INDICATOR ON ROW */
+.ra{width:24px;height:24px;border-radius:5px;border:none;background:transparent;color:var(--tx-d);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;font-size:11px;transition:all .1s;}
+.ra:hover{background:var(--bg);color:var(--tx);}
+.ra.del:hover{background:rgba(220,38,38,.08);color:var(--rose);}
 tr.saving td{opacity:.5;}
-tr.saving::after{content:'saving…';position:absolute;right:14px;font-size:10px;color:var(--gold);font-family:'Martian Mono',monospace;}
 
-/* MODAL */
-.modal-bg{position:fixed;inset:0;background:rgba(15,23,42,.4);backdrop-filter:blur(6px);z-index:100;display:none;place-items:center;}
+/* ==================== MODAL ==================== */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:100;display:none;place-items:center;}
 .modal-bg.open{display:grid;}
-.modal{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;padding:28px;width:94%;max-width:640px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:slideUp .22s ease-out;}
-@keyframes slideUp{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
-.modal h2{font-family:'Outfit',system-ui,sans-serif;font-size:18px;font-weight:800;margin-bottom:5px;}
-.modal .msub{font-size:12px;color:var(--tx-d);margin-bottom:20px;}
-.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:13px;}
-.fg{display:flex;flex-direction:column;gap:4px;}
+.modal{background:var(--bg-card);border:1px solid var(--bdr);border-radius:12px;padding:24px;width:94%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.12);animation:slideUp .18s ease-out;}
+@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.modal h2{font-size:16px;font-weight:700;margin-bottom:4px;}
+.modal .msub{font-size:11.5px;color:var(--tx-d);margin-bottom:16px;}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.fg{display:flex;flex-direction:column;gap:3px;}
 .fg.full{grid-column:1/-1;}
-.fg label{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-m);font-family:'Martian Mono',monospace;}
-.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:9px 12px;color:var(--tx);font-family:inherit;font-size:13px;}
-.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--ac-d);box-shadow:0 0 0 3px var(--ac-s);}
-.fg textarea{resize:vertical;min-height:56px;}
-.mact{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;padding-top:16px;border-top:1px solid var(--bdr);}
+.fg label{font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-m);font-family:'JetBrains Mono',monospace;font-weight:500;}
+.fg input,.fg select,.fg textarea{background:var(--bg);border:1px solid var(--bdr);border-radius:7px;padding:7px 10px;color:var(--tx);font-family:inherit;font-size:12.5px;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 2px var(--ac-s);}
+.fg textarea{resize:vertical;min-height:50px;}
+.mact{display:flex;gap:8px;justify-content:flex-end;margin-top:16px;padding-top:12px;border-top:1px solid var(--bdr);}
 
-/* UPLOAD */
-.uzone{border:2px dashed var(--bdr-s);border-radius:12px;padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px;}
+/* ==================== UPLOAD ==================== */
+.uzone{border:1.5px dashed var(--bdr-s);border-radius:10px;padding:28px 20px;text-align:center;cursor:pointer;transition:all .15s;margin-bottom:12px;}
 .uzone:hover,.uzone.over{border-color:var(--ac);background:var(--ac-s);}
-.uzone .ico{font-size:32px;opacity:.5;margin-bottom:8px;}
-.uzone .mt{font-family:'Outfit',system-ui,sans-serif;font-size:15px;font-weight:700;margin-bottom:3px;}
-.uzone .st{font-size:12px;color:var(--tx-d);}
+.uzone .ico{font-size:28px;opacity:.4;margin-bottom:6px;}
+.uzone .mt{font-size:13px;font-weight:600;margin-bottom:2px;}
+.uzone .st{font-size:11px;color:var(--tx-d);}
 .uzone input{display:none;}
-.uprev{background:var(--bg);border:1px solid var(--bdr);border-radius:8px;padding:14px;margin-top:12px;font-size:11.5px;color:var(--tx-m);font-family:'Martian Mono',monospace;max-height:180px;overflow-y:auto;line-height:1.6;}
+.uprev{background:var(--bg);border:1px solid var(--bdr);border-radius:7px;padding:12px;margin-top:10px;font-size:11px;color:var(--tx-m);font-family:'JetBrains Mono',monospace;max-height:160px;overflow-y:auto;line-height:1.5;}
 .uprev strong{color:var(--ac);}
 
-/* TOAST */
-.toast{position:fixed;bottom:24px;right:24px;background:var(--bg-card);border:1px solid var(--bdr);border-radius:10px;padding:13px 18px;font-size:13px;color:var(--tx);box-shadow:0 8px 32px rgba(0,0,0,.12);z-index:200;transform:translateY(70px);opacity:0;transition:all .28s ease;pointer-events:none;max-width:340px;}
+/* ==================== TOAST ==================== */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg-card);border:1px solid var(--bdr);border-radius:8px;padding:10px 16px;font-size:12.5px;color:var(--tx);box-shadow:var(--shadow-lg);z-index:200;transform:translateY(60px);opacity:0;transition:all .22s ease;pointer-events:none;max-width:320px;}
 .toast.show{transform:translateY(0);opacity:1;}
-.toast.s{border-left:3px solid #16a34a;}
+.toast.s{border-left:3px solid var(--green);}
 .toast.e{border-left:3px solid var(--rose);}
 .toast.i{border-left:3px solid var(--ac);}
 .toast.w{border-left:3px solid var(--gold);}
 
-@keyframes fadeUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
-.fi{animation:fadeUp .45s ease-out backwards;}
-.kpi:nth-child(1){animation-delay:.05s;}.kpi:nth-child(2){animation-delay:.1s;}.kpi:nth-child(3){animation-delay:.15s;}.kpi:nth-child(4){animation-delay:.2s;}
-@media(max-width:1100px){.app-shell{grid-template-columns:92px minmax(0,1fr);}.side-title,.side-user div,.side-link span:last-child{display:none;}.side-brand{justify-content:center;padding-left:0;padding-right:0}.side-link{justify-content:center}.charts-grid{grid-template-columns:1fr 1fr;}.chart-card:first-child{grid-column:1/-1;}.kpi-grid{grid-template-columns:1fr 1fr;}}
-@media(max-width:700px){.app-shell{display:block}.sidebar{position:relative;height:auto;border-radius:0;padding:16px}.side-title,.side-user div,.side-link span:last-child{display:block}.side-nav{display:grid;grid-template-columns:1fr 1fr}.main-panel{border-radius:0;padding:18px 14px 50px}.charts-grid{grid-template-columns:1fr;}.chart-card:first-child{grid-column:auto;}.header{flex-direction:column;align-items:flex-start;gap:14px;}.hmeta{width:100%;}.kpi-grid{grid-template-columns:1fr;}.fgrid{grid-template-columns:1fr;}}
+/* ==================== VIEWER NOTICE ==================== */
+.viewer-banner{background:#fffbeb;border:1px solid #fde68a;border-radius:8px;padding:8px 14px;margin-bottom:14px;font-size:11.5px;color:#92400e;display:none;align-items:center;gap:8px;}
+.viewer-banner svg{flex:none;width:16px;height:16px;stroke:#92400e;fill:none;stroke-width:2;}
+.viewer-mode .viewer-banner{display:flex;}
+.viewer-mode .admin-only{display:none !important;}
+
+/* ==================== EXPIRY WARNING ==================== */
+@keyframes pulseWarn{0%,100%{background:rgba(220,38,38,.06);}50%{background:rgba(220,38,38,.14);}}
+tr.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
+tr.expiring .nm{color:#b91c1c;}
+tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
+.exp-badge{display:inline-block;padding:2px 7px;border-radius:4px;font-size:9.5px;font-weight:600;font-family:'JetBrains Mono',monospace;margin-left:6px;white-space:nowrap;}
+.exp-badge.exp-soon{background:#fef3c7;color:#92400e;}
+.exp-badge.exp-past{background:#fee2e2;color:#991b1b;}
+.group-name .exp-badge{font-size:9px;vertical-align:middle;}
+
+/* ==================== EXPAND/COLLAPSE TOOLBAR ==================== */
+.grp-toolbar{display:flex;gap:6px;padding:8px 0;align-items:center;}
+.grp-toolbar button{padding:4px 12px;border:1px solid var(--bdr);border-radius:6px;background:#fff;font-family:'Inter',sans-serif;font-size:11px;font-weight:500;cursor:pointer;color:var(--tx-m);transition:all .12s;}
+.grp-toolbar button:hover{border-color:var(--ac);color:var(--ac);background:var(--ac-s);}
+.grp-toolbar .grp-count{font-size:11px;color:var(--tx-d);font-family:'JetBrains Mono',monospace;margin-left:auto;}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(6px);}to{opacity:1;transform:translateY(0);}}
+.fi{animation:fadeUp .35s ease-out backwards;}
+.kpi:nth-child(1){animation-delay:.03s;}.kpi:nth-child(2){animation-delay:.06s;}.kpi:nth-child(3){animation-delay:.09s;}.kpi:nth-child(4){animation-delay:.12s;}
+
+/* ==================== RESPONSIVE ==================== */
+@media(max-width:1100px){
+  .app-shell{grid-template-columns:56px minmax(0,1fr);}
+  .side-title,.side-user div,.side-link>span:last-child,.btn-logout{display:none;}
+  .side-brand{justify-content:center;padding:0 0 14px}.side-link{justify-content:center;padding:8px}
+  .charts-grid{grid-template-columns:1fr 1fr;}.chart-card:first-child{grid-column:1/-1;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+}
+@media(max-width:700px){
+  .app-shell{display:flex;flex-direction:column;grid-template-columns:none;}
+  .sidebar{position:fixed!important;top:auto!important;bottom:0!important;left:0!important;right:0!important;height:auto!important;max-height:68px!important;padding:4px 6px 6px!important;z-index:50!important;border-top:1px solid rgba(255,255,255,.1)!important;border-right:none!important;overflow-x:auto!important;overflow-y:hidden!important;background:#111827!important;}
+  .side-brand,.side-title,.side-user,.btn-logout,.side-footer{display:none!important;}
+  .side-nav{display:flex;gap:2px;flex-direction:row;width:100%;}
+  .side-link{flex:1;justify-content:center;padding:6px 4px;border-radius:8px;flex-direction:column;gap:2px;min-width:0;}
+  .side-link>span:first-child{font-size:16px;}
+  .side-link>span:last-child{display:block;font-size:8px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:60px;text-align:center;}
+  .main-panel{padding:12px 10px 76px;}
+  .charts-grid{grid-template-columns:1fr;}.chart-card:first-child{grid-column:auto;}
+  .header{flex-direction:column;align-items:flex-start;gap:8px;}.hmeta{text-align:left;}
+  .header h1{font-size:16px;}
+  .kpi-grid{grid-template-columns:1fr 1fr;}
+  .kpi{padding:12px;}
+  .fgrid{grid-template-columns:1fr;}
+  table{font-size:11.5px;}
+  th{font-size:9px;padding:7px 8px;}
+  td{padding:7px 8px;font-size:11.5px;}
+  tr.child-row td{font-size:11px;}
+  .group-name{font-size:12.5px;}
+  .group-chevron{font-size:9px;width:14px;height:14px;line-height:14px;}
+  tr.group-header td{padding:8px 10px;}
+  .year-tag{font-size:9.5px;padding:1px 6px;}
+  .num{font-size:11px;}
+  .chip{font-size:9.5px;padding:1px 6px;}
+  .nm{font-size:12px;}
+  .nm-sub{font-size:9.5px;}
+  .tscroll{max-height:60vh;}
+  .twrap{border-radius:8px;}
+  .modal{padding:18px;max-width:96%;border-radius:10px;}
+  .tabs{gap:4px;flex-wrap:wrap;}
+  .tab{font-size:11px;padding:6px 10px;}
+  .pagi{flex-wrap:wrap;gap:4px;padding:8px;}
+  .pagi button{padding:4px 8px;font-size:10px;}
+  .filter-bar{flex-direction:column;gap:8px;}
+  .sbox{width:100%;}
+  .fsel{font-size:11px;}
+  .login-hero{display:none;}
+  .login-side{width:100%;padding:24px 20px;}
+}
+@media(max-width:400px){
+  .kpi-grid{grid-template-columns:1fr;}
+  .main-panel{padding:10px 8px 72px;}
+  .header h1{font-size:14px;}
+}
 </style>
 </head>
 <body>
 
-<!-- LOADING SCREEN -->
+<!-- ==================== LOGIN SCREEN ==================== -->
+<div id="login-screen">
+  <!-- LEFT: Hero image -->
+  <div class="login-hero">
+    <div class="login-hero-img"></div>
+    <div class="login-hero-overlay">
+      <h1>Membangun Masa Depan,<br>Melalui Reklamasi yang<br><span>Berkelanjutan</span></h1>
+      <p>Reklamasi untuk menciptakan ruang baru yang bermanfaat bagi masyarakat, lingkungan, dan generasi mendatang.</p>
+      <div class="login-hero-badges">
+        <div class="hb"><div class="hb-ico">🌿</div>Ramah Lingkungan</div>
+        <div class="hb"><div class="hb-ico">👥</div>Manfaat bagi Masyarakat</div>
+        <div class="hb"><div class="hb-ico">✅</div>Perencanaan Berkelanjutan</div>
+        <div class="hb"><div class="hb-ico">🏗️</div>Pertumbuhan Ekonomi</div>
+      </div>
+    </div>
+  </div>
+  <!-- RIGHT: Login form -->
+  <div class="login-side">
+    <div class="login-side-inner">
+      <div class="login-header">
+        <div class="login-logo"></div>
+        <h1>Dashboard Reklamasi Tambang</h1>
+        <p>Dinas ESDM Provinsi Aceh &mdash; Bidang Mineral dan Batubara</p>
+      </div>
+      <div class="login-card">
+        <h2>Masuk ke Dashboard</h2>
+        <div class="role-options">
+          <button class="role-btn" data-role="admin" onclick="selectRole('admin')">
+            <div class="role-icon admin">
+              <svg viewBox="0 0 24 24"><path d="M12 2a5 5 0 015 5v3H7V7a5 5 0 015-5z"/><rect x="3" y="10" width="18" height="12" rx="2"/><circle cx="12" cy="16" r="1.5"/></svg>
+            </div>
+            <div class="role-info">
+              <h3>Admin</h3>
+              <p>Internal Pengusahaan Bidang Minerba &mdash; Akses penuh</p>
+            </div>
+          </button>
+          <button class="role-btn" data-role="viewer" onclick="selectRole('viewer')">
+            <div class="role-icon viewer">
+              <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+            </div>
+            <div class="role-info">
+              <h3>Viewer</h3>
+              <p>Lihat data saja &mdash; Tidak bisa mengedit</p>
+            </div>
+          </button>
+        </div>
+        <div class="login-field" id="un-field">
+          <label>Username</label>
+          <input type="text" id="un-input" placeholder="Masukkan username" autocomplete="username">
+        </div>
+        <div class="login-field" id="pw-field">
+          <label>Password</label>
+          <input type="password" id="pw-input" placeholder="Masukkan password" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+        </div>
+        <button class="login-submit" id="login-btn" onclick="doLogin()" disabled>Masuk</button>
+        <div class="login-error" id="login-err"></div>
+      </div>
+      <div class="login-footer">Pengusahaan Bidang Mineral dan Batubara &middot; Dinas ESDM Aceh</div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== LOADING ==================== -->
 <div id="loading">
-  <div class="logo-big">R</div>
-  <div class="load-text">Reklamasi Tambang Aceh</div>
+  <div class="load-text">Memuat Dashboard</div>
   <div class="load-bar"><div class="load-bar-inner"></div></div>
   <div class="load-sub" id="load-msg">Menghubungkan ke database…</div>
 </div>
 
-<div class="container" id="app" style="display:none">
+<!-- ==================== APP ==================== -->
+<div class="container" id="app">
 <div class="app-shell">
 <aside class="sidebar">
   <div class="side-brand">
-    <div class="crest" aria-label="Logo Pemerintah Aceh"></div>
-    <div class="side-title">ESDM<span>ACEH</span></div>
+    <div class="crest"></div>
+    <div class="side-title">ESDM<span>Aceh</span></div>
   </div>
-  <nav class="side-nav" id="side-nav" aria-label="Menu utama">
-
-    <!-- Dashboard -->
+  <nav class="side-nav" id="side-nav">
     <button class="side-link active" data-view="dashboard" data-tab="iup_op">
-      <span class="side-ico">
-        <svg viewBox="0 0 24 24">
-          <rect x="3" y="3" width="7" height="8" rx="1.5" class="anim-glow"/>
-          <rect x="14" y="3" width="7" height="5" rx="1.5"/>
-          <rect x="14" y="12" width="7" height="9" rx="1.5" class="anim-glow"/>
-          <rect x="3" y="15" width="7" height="6" rx="1.5"/>
-        </svg>
-      </span>
+      <span class="side-ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="8" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="15" width="7" height="6" rx="1.5"/></svg></span>
       <span>Dashboard</span>
     </button>
-
-    <!-- Data IUP -->
     <button class="side-link" data-view="data" data-tab="iup_all">
-      <span class="side-ico">
-        <svg viewBox="0 0 24 24">
-          <ellipse cx="12" cy="6" rx="8" ry="3" class="anim-bob"/>
-          <path d="M4 6v4c0 1.66 3.58 3 8 3s8-1.34 8-3V6" class="anim-bob"/>
-          <path d="M4 10v4c0 1.66 3.58 3 8 3s8-1.34 8-3v-4" class="anim-dash"/>
-        </svg>
-      </span>
+      <span class="side-ico"><svg viewBox="0 0 24 24"><ellipse cx="12" cy="6" rx="8" ry="3"/><path d="M4 6v4c0 1.66 3.58 3 8 3s8-1.34 8-3V6"/><path d="M4 10v4c0 1.66 3.58 3 8 3s8-1.34 8-3v-4"/></svg></span>
       <span>Data IUP</span>
     </button>
-
-    <!-- Jaminan OP -->
     <button class="side-link" data-view="data" data-tab="rek_op">
-      <span class="side-ico">
-        <svg viewBox="0 0 24 24">
-          <path d="M12 2l2.8 5.6L21 8.7l-4.5 4.4 1.1 6.2L12 16.5l-5.6 2.8 1.1-6.2L3 8.7l6.2-.9z" class="anim-spin"/>
-          <circle cx="12" cy="12" r="2.5" class="anim-pulse" fill="rgba(255,255,255,0.3)" stroke="none"/>
-        </svg>
-      </span>
+      <span class="side-ico"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></span>
       <span>Jaminan OP</span>
     </button>
-
-    <!-- Jaminan Eksplorasi -->
     <button class="side-link" data-view="data" data-tab="rek_eks">
-      <span class="side-ico">
-        <svg viewBox="0 0 24 24">
-          <circle cx="11" cy="11" r="7"/>
-          <path d="M16.5 16.5L21 21" stroke-width="2" stroke-linecap="round"/>
-          <path d="M8 11h6M11 8v6" class="anim-dash"/>
-        </svg>
-      </span>
+      <span class="side-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21" stroke-width="2"/><path d="M8 11h6M11 8v6"/></svg></span>
       <span>Jaminan Eksplorasi</span>
     </button>
   </nav>
   <div class="side-user">
-    <div class="avatar">A</div>
-    <div><strong>M Dicka Andrian</strong><span>Admin ESDM Aceh</span></div>
+    <div class="avatar" id="user-avatar">A</div>
+    <div><strong id="user-name">—</strong><span id="user-role-label">—</span></div>
   </div>
+  <button class="btn-logout" onclick="doLogout()">Keluar</button>
 </aside>
 
 <main class="main-panel">
-
 <header class="header">
   <div class="hbrand">
-    <div class="logo">R</div>
     <div>
       <h1>Dashboard <em>Reklamasi Tambang Aceh</em></h1>
-      <div class="sub">Data master IUP dan jaminan reklamasi · Dinas ESDM Aceh</div>
+      <div class="sub">Data master IUP dan jaminan reklamasi &middot; Dinas ESDM Aceh</div>
     </div>
   </div>
   <div class="hmeta">
     <div class="live"><span class="dot" id="conn-dot"></span><span id="conn-label">Terhubung</span></div>
-    <div class="conn-status ok" id="conn-status">SUPABASE · REAL-TIME SYNC</div>
-    <div style="margin-top:4px;color:var(--tx-d);font-size:10px;" id="last-sync">—</div>
+    <div class="conn-status ok" id="conn-status">SUPABASE</div>
+    <div style="margin-top:2px;color:var(--tx-d);font-size:9.5px;" id="last-sync">—</div>
   </div>
 </header>
 
-<section class="view-section active" id="dashboard-section">
-<!-- KPI -->
-<div class="kpi-grid">
-  <div class="kpi fi" data-icon="▤" style="--kc:#1559ff"><div class="kpi-label">Total IUP</div><div class="kpi-value" id="k-total">—</div><div class="kpi-detail"><span>IUP OP <strong id="k-op">—</strong></span><span>Eksplorasi <strong id="k-eks">—</strong></span></div></div>
-  <div class="kpi fi" data-icon="⌖" style="--kc:#f08a12"><div class="kpi-label">Luas WIUP</div><div class="kpi-value"><span id="k-luas">—</span><span class="unit">Ha</span></div><div class="kpi-detail"><span>Rata-rata <strong id="k-avg">—</strong></span></div></div>
-  <div class="kpi fi" data-icon="◇" style="--kc:#f05a22"><div class="kpi-label">Jaminan OP</div><div class="kpi-value"><span id="k-jop">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-rop">—</strong></span></div></div>
-  <div class="kpi fi" data-icon="◈" style="--kc:#0788c6"><div class="kpi-label">Jaminan Eksplorasi</div><div class="kpi-value"><span id="k-jeks">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-deks">—</strong></span></div></div>
+<!-- VIEWER BANNER -->
+<div class="viewer-banner" id="viewer-banner">
+  <svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+  Mode Viewer — Anda hanya dapat melihat data. Untuk mengedit, masuk sebagai Admin.
 </div>
 
-<!-- CHARTS -->
+<!-- ==================== DASHBOARD ==================== -->
+<section class="view-section active" id="dashboard-section">
+<div class="kpi-grid">
+  <div class="kpi fi" style="--kc:#2563eb"><div class="kpi-label">Total IUP</div><div class="kpi-value" id="k-total">—</div><div class="kpi-detail"><span>IUP OP <strong id="k-op">—</strong></span><span>Eksplorasi <strong id="k-eks">—</strong></span></div></div>
+  <div class="kpi fi" style="--kc:#d97706"><div class="kpi-label">Luas WIUP</div><div class="kpi-value"><span id="k-luas">—</span><span class="unit">Ha</span></div><div class="kpi-detail"><span>Rata-rata <strong id="k-avg">—</strong></span></div></div>
+  <div class="kpi fi" style="--kc:#059669"><div class="kpi-label">Jaminan OP</div><div class="kpi-value"><span id="k-jop">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-rop">—</strong></span></div></div>
+  <div class="kpi fi" style="--kc:#0284c7"><div class="kpi-label">Jaminan Eksplorasi</div><div class="kpi-value"><span id="k-jeks">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-deks">—</strong></span></div></div>
+</div>
 <div class="charts-grid">
-  <div class="chart-card" data-icon="▥"><div class="chart-title">Sebaran IUP per Kabupaten</div><div class="chart-sub">Jumlah izin per lokasi</div><div class="chart-body"><canvas id="c-lok"></canvas></div></div>
-  <div class="chart-card" data-icon="◇"><div class="chart-title">Komoditas</div><div class="chart-sub">Distribusi jenis tambang</div><div class="chart-body"><canvas id="c-kom"></canvas></div></div>
-  <div class="chart-card" data-icon="◔"><div class="chart-title">Status IUP</div><div class="chart-sub">OP vs Eksplorasi</div><div class="chart-body"><canvas id="c-st"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">Sebaran IUP per Kabupaten</div><div class="chart-sub">Jumlah izin per lokasi</div><div class="chart-body"><canvas id="c-lok"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">Komoditas</div><div class="chart-sub">Distribusi jenis tambang</div><div class="chart-body"><canvas id="c-kom"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">Status IUP</div><div class="chart-sub">OP vs Eksplorasi</div><div class="chart-body"><canvas id="c-st"></canvas></div></div>
 </div>
 </section>
 
-<!-- DATA EXPLORER -->
+<!-- ==================== DATA EXPLORER ==================== -->
 <section class="view-section" id="data-section">
-<div class="sec"><span id="data-title">Data IUP</span> <span class="hint">— tersimpan ke Supabase, sync semua perangkat</span></div>
-
+<div class="sec"><span id="data-title">Data IUP</span> <span class="hint">— tersimpan ke Supabase</span></div>
 <div class="tabs" id="tabs">
   <button class="tab active" data-tab="iup_op">IUP OP <span class="badge" id="tc-op">—</span></button>
   <button class="tab" data-tab="iup_eks">IUP Eksplorasi <span class="badge" id="tc-eks">—</span></button>
-  <button class="tab" data-tab="rek_op">Rencana & Jaminan OP <span class="badge" id="tc-rop">—</span></button>
-  <button class="tab" data-tab="rek_eks">Rencana & Jaminan EKS <span class="badge" id="tc-reks">—</span></button>
+  <button class="tab" data-tab="rek_op">Rencana &amp; Jaminan OP <span class="badge" id="tc-rop">—</span></button>
+  <button class="tab" data-tab="rek_eks">Rencana &amp; Jaminan EKS <span class="badge" id="tc-reks">—</span></button>
 </div>
-
 <div class="toolbar">
   <div class="tl" id="filters"></div>
   <div class="ta">
-    <button class="btn btn-upload" id="btn-xl">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <button class="btn btn-upload admin-only" id="btn-xl">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
       Upload Excel
     </button>
-    <button class="btn btn-green" id="btn-add">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    <button class="btn btn-green admin-only" id="btn-add">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
       Tambah
     </button>
     <button class="btn btn-ghost" id="btn-export">
-      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
     </button>
   </div>
 </div>
-
+<div class="grp-toolbar" id="grp-toolbar" style="display:none;">
+  <button onclick="toggleAllGroups(true)">▼ Expand Semua</button>
+  <button onclick="toggleAllGroups(false)">▲ Collapse Semua</button>
+  <span class="grp-count" id="grp-warn-count"></span>
+</div>
 <div class="twrap">
   <div class="tscroll"><table id="tbl"></table></div>
+  <div id="pagi-wrap"></div>
   <div class="tfooter"><span>Menampilkan <strong id="rc">0</strong></span><span id="tsum"></span></div>
 </div>
 </section>
-
 </main>
 </div>
-</div><!-- /app -->
+</div>
 
 <!-- MODAL FORM -->
 <div class="modal-bg" id="m-form">
@@ -389,9 +535,7 @@ tr.saving::after{content:'saving…';position:absolute;right:14px;font-size:10px
     <div class="fgrid" id="m-fields"></div>
     <div class="mact">
       <button class="btn btn-ghost" id="m-cancel">Batal</button>
-      <button class="btn btn-green" id="m-save">
-        <span id="m-save-text">Simpan</span>
-      </button>
+      <button class="btn btn-green" id="m-save"><span id="m-save-text">Simpan</span></button>
     </div>
   </div>
 </div>
@@ -403,14 +547,14 @@ tr.saving::after{content:'saving…';position:absolute;right:14px;font-size:10px
     <div class="msub">Upload .xlsx/.csv ke tab aktif — data langsung tersimpan ke Supabase</div>
     <div class="uzone" id="uzone">
       <div class="ico">📄</div>
-      <div class="mt">Drag & drop file di sini</div>
+      <div class="mt">Drag &amp; drop file di sini</div>
       <div class="st">atau klik untuk pilih (.xlsx, .xls, .csv)</div>
       <input type="file" id="finput" accept=".xlsx,.xls,.csv">
     </div>
     <div id="uprev-wrap" style="display:none"><div class="uprev" id="uprev"></div></div>
-    <div id="umap" style="display:none;margin-top:12px;">
-      <label style="font-size:11px;color:var(--tx-m);font-family:'Martian Mono',monospace;text-transform:uppercase;letter-spacing:.08em;">Pilih Sheet:</label>
-      <select class="fsel" id="ssheet" style="width:100%;margin-top:6px;"></select>
+    <div id="umap" style="display:none;margin-top:10px;">
+      <label style="font-size:10px;color:var(--tx-m);font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.06em;">Pilih Sheet:</label>
+      <select class="fsel" id="ssheet" style="width:100%;margin-top:4px;"></select>
     </div>
     <div class="mact">
       <button class="btn btn-ghost" id="u-cancel">Batal</button>
@@ -422,7 +566,7 @@ tr.saving::after{content:'saving…';position:absolute;right:14px;font-size:10px
 
 <!-- MODAL DELETE -->
 <div class="modal-bg" id="m-del">
-  <div class="modal" style="max-width:400px;">
+  <div class="modal" style="max-width:380px;">
     <h2>Hapus Data?</h2>
     <div class="msub" id="del-msg">Yakin ingin menghapus baris ini?</div>
     <div class="mact">
@@ -436,17 +580,121 @@ tr.saving::after{content:'saving…';position:absolute;right:14px;font-size:10px
 
 <script>
 // ============================================================
-// SUPABASE CONFIG
+// SUPABASE CONFIG (harus pertama, dipakai oleh auth)
 // ============================================================
 const SUPA_URL = 'https://ngewzlkifctbmrquzrfj.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nZXd6bGtpZmN0Ym1ycXV6cmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjgyMTcsImV4cCI6MjA5MTk0NDIxN30.oLlI_Y9-Seg6d6NEbyYmYrgFqiGoPP8Ri1KznzvBe_I';
 const { createClient } = supabase;
 const sb = createClient(SUPA_URL, SUPA_KEY);
 
+// Safe sessionStorage wrapper (disabled on data: URLs etc)
+const _ss = {
+  get(k) { try { return sessionStorage.getItem(k); } catch(e) { return null; } },
+  set(k,v) { try { sessionStorage.setItem(k,v); } catch(e) {} },
+  del(k) { try { sessionStorage.removeItem(k); } catch(e) {} }
+};
+
 // ============================================================
-// IN-MEMORY CACHE (populated from Supabase)
+// AUTH (via Supabase RPC — password tidak pernah ada di client)
+// ============================================================
+let USER_ROLE = null;
+let USER_DISPLAY = null;
+
+function selectRole(role) {
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.toggle('selected', b.dataset.role === role));
+  document.getElementById('pw-field').classList.toggle('show', role === 'admin');
+  document.getElementById('un-field').classList.toggle('show', role === 'admin');
+  document.getElementById('login-btn').disabled = false;
+  document.getElementById('login-err').style.display = 'none';
+  if (role === 'viewer') {
+    document.getElementById('pw-input').value = '';
+    document.getElementById('un-input').value = '';
+  }
+  window._selectedRole = role;
+}
+
+async function doLogin() {
+  const role = window._selectedRole;
+  if (!role) return;
+  const err = document.getElementById('login-err');
+  const btn = document.getElementById('login-btn');
+
+  if (role === 'admin') {
+    const username = document.getElementById('un-input').value.trim();
+    const pw = document.getElementById('pw-input').value;
+    if (!username || !pw) {
+      err.textContent = 'Masukkan username dan password.';
+      err.style.display = 'block';
+      return;
+    }
+    btn.disabled = true;
+    btn.textContent = 'Memverifikasi…';
+    try {
+      const { data, error } = await sb.rpc('verify_login', { p_username: username, p_password: pw });
+      if (error) throw error;
+      if (!data.success) {
+        err.textContent = data.message || 'Username atau password salah.';
+        err.style.display = 'block';
+        return;
+      }
+      USER_ROLE = data.role;
+      USER_DISPLAY = data.display_name || username;
+      _ss.set('rek_role', data.role);
+      _ss.set('rek_display', USER_DISPLAY);
+    } catch (e) {
+      err.textContent = 'Gagal terhubung: ' + (e.message || e);
+      err.style.display = 'block';
+      return;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Masuk';
+    }
+  } else {
+    USER_ROLE = 'viewer';
+    USER_DISPLAY = 'Viewer';
+    _ss.set('rek_role', 'viewer');
+    _ss.set('rek_display', 'Viewer');
+  }
+
+  err.style.display = 'none';
+  document.getElementById('login-screen').style.display = 'none';
+  startApp();
+}
+
+function doLogout() {
+  _ss.del('rek_role');
+  _ss.del('rek_display');
+  USER_ROLE = null;
+  USER_DISPLAY = null;
+  window._selectedRole = null;
+  document.querySelectorAll('.role-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('pw-field').classList.remove('show');
+  document.getElementById('un-field').classList.remove('show');
+  document.getElementById('pw-input').value = '';
+  document.getElementById('un-input').value = '';
+  document.getElementById('login-btn').disabled = true;
+  document.getElementById('login-err').style.display = 'none';
+  document.getElementById('app').style.display = 'none';
+  document.getElementById('login-screen').style.display = 'flex';
+}
+
+function applyRole() {
+  const isViewer = USER_ROLE === 'viewer';
+  document.body.classList.toggle('viewer-mode', isViewer);
+  const av = document.getElementById('user-avatar');
+  av.textContent = USER_ROLE === 'admin' ? 'A' : 'V';
+  av.className = 'avatar ' + (USER_ROLE === 'admin' ? 'admin-av' : 'viewer-av');
+  document.getElementById('user-name').textContent = USER_DISPLAY || (USER_ROLE === 'admin' ? 'Admin' : 'Viewer');
+  document.getElementById('user-role-label').textContent = USER_ROLE === 'admin' ? 'Pengusahaan Bidang Minerba' : 'Mode Lihat Saja';
+}
+
+function isAdmin() { return USER_ROLE === 'admin'; }
+
+// ============================================================
+// IN-MEMORY CACHE
 // ============================================================
 const DB = { iup: [], reklamasi_op: [], reklamasi_eks: [] };
+const DRIVE = {}; // pemegang_iup → drive_url
 
 // ============================================================
 // UTILS
@@ -485,7 +733,7 @@ function setLoadMsg(msg) { $('#load-msg').textContent = msg; }
 function setConnStatus(ok, msg) {
   const dot=$('#conn-dot'), lbl=$('#conn-label'), st=$('#conn-status');
   dot.className='dot'+(ok?'':' err');
-  lbl.textContent=ok?'Terhubung':'Koneksi Gagal';
+  lbl.textContent=ok?'Terhubung':'Offline';
   st.className='conn-status'+(ok?' ok':' err');
   st.textContent=msg;
 }
@@ -504,10 +752,11 @@ function getTable(tab) {
 }
 
 async function fetchAll() {
-  const [r1, r2, r3] = await Promise.all([
+  const [r1, r2, r3, r4] = await Promise.all([
     sb.from('iup').select('*').order('id'),
     sb.from('reklamasi_op').select('*').order('id'),
     sb.from('reklamasi_eks').select('*').order('id'),
+    sb.from('drive_links').select('pemegang_iup,drive_url'),
   ]);
   if (r1.error) throw r1.error;
   if (r2.error) throw r2.error;
@@ -515,33 +764,26 @@ async function fetchAll() {
   DB.iup          = r1.data;
   DB.reklamasi_op = r2.data;
   DB.reklamasi_eks= r3.data;
+  Object.keys(DRIVE).forEach(k=>delete DRIVE[k]);
+  if (r4.data) r4.data.forEach(d => DRIVE[d.pemegang_iup] = d.drive_url);
   updateLastSync();
 }
 
-// Save DB to localStorage as cache
 const CACHE_KEY = 'reklamasi_cache_v1';
-function saveCache() {
-  try { localStorage.setItem(CACHE_KEY, JSON.stringify({ts: Date.now(), data: {iup:DB.iup, reklamasi_op:DB.reklamasi_op, reklamasi_eks:DB.reklamasi_eks}})); } catch(e) {}
-}
-function loadCache() {
-  try { const raw = localStorage.getItem(CACHE_KEY); if (raw) return JSON.parse(raw); } catch(e) {}
-  return null;
-}
+const _ls = {
+  get(k) { try { const r=localStorage.getItem(k); return r?JSON.parse(r):null; } catch(e) { return null; } },
+  set(k,v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
+};
+function saveCache() { _ls.set(CACHE_KEY, {ts: Date.now(), data: {iup:DB.iup, reklamasi_op:DB.reklamasi_op, reklamasi_eks:DB.reklamasi_eks}}); }
+function loadCache() { return _ls.get(CACHE_KEY); }
 
 function showApp() {
-  $('#loading').style.display = 'none';
+  $('#loading').classList.remove('show');
   $('#app').style.display = 'block';
 }
 
-
-// ============================================================
-// INIT — dipindah ke bawah script (lihat akhir file)
-// ============================================================
-
-
 async function insertRow(tab, obj) {
   const tbl = getTable(tab);
-  // Remove id/created_at/updated_at
   const clean = {...obj};
   delete clean.id; delete clean.created_at; delete clean.updated_at;
   const { data, error } = await sb.from(tbl).insert([clean]).select();
@@ -552,20 +794,13 @@ async function insertRow(tab, obj) {
 async function updateRow(tab, id, obj) {
   const tbl = getTable(tab);
   const clean = {...obj};
-  // Strip internal/meta fields that don't belong in the update payload
-  delete clean.id;
-  delete clean.created_at;
-  delete clean.updated_at;
-  // Strip any undefined or function values
+  delete clean.id; delete clean.created_at; delete clean.updated_at;
   Object.keys(clean).forEach(k => {
     if (clean[k] === undefined || typeof clean[k] === 'function') delete clean[k];
   });
   clean.updated_at = new Date().toISOString();
   const { error } = await sb.from(tbl).update(clean).eq('id', Number(id));
-  if (error) {
-    console.error('updateRow error:', error, '\ntable:', tbl, '\nid:', id, '\npayload:', clean);
-    throw new Error(error.message || JSON.stringify(error));
-  }
+  if (error) throw new Error(error.message || JSON.stringify(error));
 }
 
 async function deleteRow(tab, id) {
@@ -602,7 +837,8 @@ async function truncateAndInsert(tab, rows) {
 // ============================================================
 // STATE
 // ============================================================
-const S = { tab:'iup_op', filters:{}, search:'', sort:{col:null,dir:'asc'}, editId:null };
+const S = { tab:'iup_op', filters:{}, search:'', sort:{col:null,dir:'asc'}, editId:null, page:1 };
+const PAGE_SIZE = 25;
 
 // ============================================================
 // DATA VIEWS
@@ -621,84 +857,81 @@ function getData(tab) {
 // ============================================================
 const TABS = {
   iup_all:{label:'Data IUP',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'240px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
-    {k:'status_iup',l:'Status',type:'select',opts:['IUP OP','IUP Ekspl.'],w:'110px',sort:1,render:v=>{const s=String(v||'');if(s==='IUP OP')return'<span class="chip c-op">IUP OP</span>';if(s==='IUP Ekspl.')return'<span class="chip c-eks">Eksplorasi</span>';return'<span class="chip c-neu">—</span>';}},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'130px',sort:1},
-    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'100px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'130px',sort:1},
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
+    {k:'status_iup',l:'Status',type:'select',opts:['IUP OP','IUP Ekspl.'],w:'100px',sort:1,render:v=>{const s=String(v||'');if(s==='IUP OP')return'<span class="chip c-op">IUP OP</span>';if(s==='IUP Ekspl.')return'<span class="chip c-eks">Eksplorasi</span>';return'<span class="chip c-neu">—</span>';}},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
-    {k:'tgl_mulai',l:'Mulai',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
-    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
   ],filters:['status_iup','komoditas','lokasi'],searchKeys:['nama','nomor_sk','status_iup','komoditas','lokasi'],
   summary:rows=>{const l=rows.reduce((s,x)=>s+(x.luas_ha||0),0);return`Luas: <strong>${fmt.num(Math.round(l))} Ha</strong>`;}},
 
   iup_op:{label:'IUP OP',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'240px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'130px',sort:1},
-    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'100px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'130px',sort:1},
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
-    {k:'tgl_mulai',l:'Mulai',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
-    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
   ],filters:['komoditas','lokasi'],searchKeys:['nama','nomor_sk','komoditas','lokasi'],
   summary:rows=>{const l=rows.reduce((s,x)=>s+(x.luas_ha||0),0);return`Luas: <strong>${fmt.num(Math.round(l))} Ha</strong>`;}},
 
   iup_eks:{label:'IUP Eksplorasi',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'240px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'130px',sort:1},
-    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'100px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'130px',sort:1},
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+    {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
-    {k:'tgl_mulai',l:'Mulai',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
-    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'110px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
+    {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
   ],filters:['komoditas','lokasi'],searchKeys:['nama','nomor_sk','komoditas','lokasi'],
   summary:rows=>{const l=rows.reduce((s,x)=>s+(x.luas_ha||0),0);return`Luas: <strong>${fmt.num(Math.round(l))} Ha</strong>`;}},
 
   rek_op:{label:'Rencana & Jaminan OP',grouped:true,fields:[
-    {k:'pemegang_iup',l:'Pemegang IUP',type:'text',w:'200px',sort:1},
+    {k:'pemegang_iup',l:'Pemegang IUP',type:'text',w:'180px',sort:1},
     {k:'periode_ke',l:'Periode',type:'text',w:'0',sort:1,formOnly:1,hint:'Contoh: 2026-2030'},
-    {k:'dokumen',l:'Dok RR',type:'select',opts:['Ada','Tidak',''],w:'80px',sort:1,render:v=>{const s=String(v||'').toLowerCase();if(s==='ada')return'<span class="chip c-ada">Ada</span>';if(s==='tidak')return'<span class="chip c-tdk">Tidak</span>';return'<span class="chip c-neu">—</span>';}},
-    {k:'tahun_jaminan',l:'Tahun Jaminan',type:'text',w:'110px',sort:1,hint:'Contoh: 2022'},
-    {k:'no_sk_pengesahan',l:'No SK Pengesahan',type:'text',w:'160px',sort:1},
-    {k:'jumlah_rencana',l:'Rencana (Rp)',type:'number',w:'140px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'no_deposito',l:'No Deposito',type:'text',w:'120px',sort:1},
-    {k:'nama_bank',l:'Bank',type:'text',w:'110px',sort:1},
-    {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'140px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'keterangan',l:'Keterangan',type:'text',w:'160px',sort:1,render:v=>v?`<span style="font-size:11.5px;color:var(--tx-m)">${v}</span>`:''},
+    {k:'dokumen',l:'Dok RR',type:'select',opts:['Ada','Tidak',''],w:'75px',sort:1,render:v=>{const s=String(v||'').toLowerCase();if(s==='ada')return'<span class="chip c-ada">Ada</span>';if(s==='tidak')return'<span class="chip c-tdk">Tidak</span>';return'<span class="chip c-neu">—</span>';}},
+    {k:'tahun_jaminan',l:'Tahun Jaminan',type:'text',w:'100px',sort:1,hint:'Contoh: 2022'},
+    {k:'no_sk_pengesahan',l:'No SK Pengesahan',type:'text',w:'150px',sort:1},
+    {k:'jumlah_rencana',l:'Rencana (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'no_deposito',l:'No Deposito',type:'text',w:'110px',sort:1},
+    {k:'nama_bank',l:'Bank',type:'text',w:'100px',sort:1},
+    {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${v}</span>`:''},
   ],filters:['dokumen','nama_bank'],searchKeys:['pemegang_iup','no_deposito','nama_bank','tahun_jaminan','keterangan'],
   summary:rows=>{
     const j=rows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
     const r=sumRencanaDedup(rows);
     const pct=r>0?(j/r*100).toFixed(1).replace('.',',')+' %':'—';
-    return`Jaminan (berdeposito): <strong>${fmt.rpS(j)}</strong> · Rencana: <strong>${fmt.rpS(r)}</strong> · <strong>${pct}</strong>`;
+    return`Jaminan: <strong>${fmt.rpS(j)}</strong> &middot; Rencana: <strong>${fmt.rpS(r)}</strong> &middot; <strong>${pct}</strong>`;
   }},
 
   rek_eks:{label:'Rencana & Jaminan EKS',grouped:true,fields:[
-    {k:'pemegang_iup',l:'Pemegang IUP',type:'text',w:'200px',sort:1},
+    {k:'pemegang_iup',l:'Pemegang IUP',type:'text',w:'180px',sort:1},
     {k:'tahun',l:'Periode',type:'text',w:'0',sort:1,formOnly:1,hint:'Range periode IUP, contoh: 2025-2032'},
-    {k:'dokumen',l:'Dok RR',type:'select',opts:['Ada','Tidak',''],w:'85px',sort:1,render:v=>{const s=String(v||'').toLowerCase();if(s==='ada')return'<span class="chip c-ada">Ada</span>';if(s==='tidak')return'<span class="chip c-tdk">Tidak</span>';return'<span class="chip c-neu">—</span>';}},
-    {k:'tahun_jaminan',l:'Tahun Jaminan',type:'text',w:'110px',sort:1,hint:'Contoh: 2025'},
-    {k:'no_sk_pengesahan',l:'No SK Pengesahan',type:'text',w:'160px',sort:1},
-    {k:'jumlah_rencana',l:'Rencana (Rp)',type:'number',w:'140px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'no_deposito',l:'No Deposito',type:'text',w:'120px',sort:1},
-    {k:'nama_bank',l:'Bank',type:'text',w:'110px',sort:1},
-    {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'140px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'keterangan',l:'Keterangan',type:'text',w:'160px',sort:1,render:v=>v?`<span style="font-size:11.5px;color:var(--tx-m)">${v}</span>`:''},
+    {k:'dokumen',l:'Dok RR',type:'select',opts:['Ada','Tidak',''],w:'75px',sort:1,render:v=>{const s=String(v||'').toLowerCase();if(s==='ada')return'<span class="chip c-ada">Ada</span>';if(s==='tidak')return'<span class="chip c-tdk">Tidak</span>';return'<span class="chip c-neu">—</span>';}},
+    {k:'tahun_jaminan',l:'Tahun Jaminan',type:'text',w:'100px',sort:1,hint:'Contoh: 2025'},
+    {k:'no_sk_pengesahan',l:'No SK Pengesahan',type:'text',w:'150px',sort:1},
+    {k:'jumlah_rencana',l:'Rencana (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'no_deposito',l:'No Deposito',type:'text',w:'110px',sort:1},
+    {k:'nama_bank',l:'Bank',type:'text',w:'100px',sort:1},
+    {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${v}</span>`:''},
   ],filters:['dokumen','nama_bank'],searchKeys:['pemegang_iup','no_deposito','nama_bank','tahun','tahun_jaminan','keterangan'],
   summary:rows=>{
     const j=rows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
     const r=sumRencanaDedup(rows);
     const pct=r>0?(j/r*100).toFixed(1).replace('.',',')+' %':'—';
-    return`Jaminan (berdeposito): <strong>${fmt.rpS(j)}</strong> · Rencana: <strong>${fmt.rpS(r)}</strong> · <strong>${pct}</strong>`;
+    return`Jaminan: <strong>${fmt.rpS(j)}</strong> &middot; Rencana: <strong>${fmt.rpS(r)}</strong> &middot; <strong>${pct}</strong>`;
   }},
 };
 
 // ============================================================
 // KPI + CHARTS
 // ============================================================
-
-// Rencana: per pemegang+periode, sum UNIQUE values only
-// (same value repeated across years = count once; different values per year = sum all)
 function sumRencanaDedup(rows) {
   const groups = new Map();
   rows.forEach(r => {
@@ -719,7 +952,6 @@ function updateKPIs() {
   const rp=sumRencanaDedup(rop);
   const jeks=reks.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
   const reks_r=reks.reduce((s,x)=>s+(x.jumlah_rencana||0),0);
-  const dokeks=reks.filter(x=>String(x.dokumen||'').toLowerCase()==='ada').length;
   $('#k-total').textContent=total;
   $('#k-op').textContent=op;
   $('#k-eks').textContent=total-op;
@@ -739,14 +971,14 @@ let charts=[];
 function buildCharts(){
   charts.forEach(c=>c.destroy()); charts=[];
   const countBy=(arr,k)=>{const m=new Map();arr.forEach(x=>{const v=x[k]||'(kosong)';m.set(v,(m.get(v)||0)+1);});return[...m.entries()].sort((a,b)=>b[1]-a[1]);};
-  const co={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#475569',font:{family:"'Outfit',sans-serif",size:11,weight:'600'},boxWidth:10,boxHeight:10,padding:10}},tooltip:{backgroundColor:'#ffffff',borderColor:'#e2e8f0',borderWidth:1,titleColor:'#0f172a',bodyColor:'#0f172a',padding:10,titleFont:{family:"'Outfit',sans-serif",size:13,weight:'700'},bodyFont:{family:"'Martian Mono',monospace",size:12}}}};
-  const pal=['#2563eb','#d97706','#16a34a','#9333ea','#e11d48','#0284c7','#65a30d','#c2410c','#7c3aed','#0f766e','#b45309','#1d4ed8'];
+  const co={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:10.5,weight:'500'},boxWidth:8,boxHeight:8,padding:8}},tooltip:{backgroundColor:'#fff',borderColor:'#e5e7eb',borderWidth:1,titleColor:'#1f2937',bodyColor:'#1f2937',padding:8,titleFont:{family:"'Inter',sans-serif",size:12,weight:'600'},bodyFont:{family:"'JetBrains Mono',monospace",size:11}}}};
+  const pal=['#2563eb','#d97706','#059669','#7c3aed','#dc2626','#0284c7','#65a30d','#c2410c','#9333ea','#0f766e'];
   const lok=countBy(DB.iup,'lokasi');
-  charts.push(new Chart($('#c-lok'),{type:'bar',data:{labels:lok.map(x=>x[0]),datasets:[{label:'IUP',data:lok.map(x=>x[1]),backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}]},options:{...co,indexAxis:'y',plugins:{...co.plugins,legend:{display:false}},scales:{x:{grid:{color:'#e2e8f0',drawBorder:false},ticks:{color:'#94a3b8',font:{family:"'Martian Mono',monospace",size:10}}},y:{grid:{display:false},ticks:{color:'#475569',font:{family:"'Outfit',sans-serif",size:11,weight:'600'}}}}}}));
+  charts.push(new Chart($('#c-lok'),{type:'bar',data:{labels:lok.map(x=>x[0]),datasets:[{label:'IUP',data:lok.map(x=>x[1]),backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}]},options:{...co,indexAxis:'y',plugins:{...co.plugins,legend:{display:false}},scales:{x:{grid:{color:'#f3f4f6',drawBorder:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9.5}}},y:{grid:{display:false},ticks:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:10.5,weight:'500'}}}}}}));
   const kom=countBy(DB.iup,'komoditas');
-  charts.push(new Chart($('#c-kom'),{type:'doughnut',data:{labels:kom.map(x=>x[0]),datasets:[{data:kom.map(x=>x[1]),backgroundColor:kom.map((_,i)=>pal[i%pal.length]),borderColor:'#ffffff',borderWidth:1,hoverOffset:2}]},options:{...co,cutout:'62%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'right',labels:{...co.plugins.legend.labels,padding:8,font:{family:"'Outfit',sans-serif",size:10.5,weight:'600'}}}}}}));
+  charts.push(new Chart($('#c-kom'),{type:'doughnut',data:{labels:kom.map(x=>x[0]),datasets:[{data:kom.map(x=>x[1]),backgroundColor:kom.map((_,i)=>pal[i%pal.length]),borderColor:'#fff',borderWidth:1.5,hoverOffset:2}]},options:{...co,cutout:'62%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'right',labels:{...co.plugins.legend.labels,padding:6}}}}}));
   const st=countBy(DB.iup,'status_iup');
-  charts.push(new Chart($('#c-st'),{type:'doughnut',data:{labels:st.map(x=>x[0]),datasets:[{data:st.map(x=>x[1]),backgroundColor:['#2563eb','#d97706'],borderColor:'#ffffff',borderWidth:1,hoverOffset:2}]},options:{...co,cutout:'68%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'bottom'}}}}));
+  charts.push(new Chart($('#c-st'),{type:'doughnut',data:{labels:st.map(x=>x[0]),datasets:[{data:st.map(x=>x[1]),backgroundColor:['#2563eb','#d97706'],borderColor:'#fff',borderWidth:1.5,hoverOffset:2}]},options:{...co,cutout:'68%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'bottom'}}}}));
 }
 
 // ============================================================
@@ -756,7 +988,7 @@ function uniq(arr,key){const s=new Set();arr.forEach(x=>{const v=x[key];if(v!=nu
 
 function buildFilters(){
   const cfg=TABS[S.tab], data=getData(S.tab), c=$('#filters');
-  c.innerHTML=`<div class="sbox"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si" placeholder="Cari..." value="${S.search.replace(/"/g,'&quot;')}"></div>`;
+  c.innerHTML=`<div class="sbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si" placeholder="Cari..." value="${S.search.replace(/"/g,'&quot;')}"></div>`;
   if(cfg.grouped){
     const names=uniq(data,'pemegang_iup'), cur=S.filters['pemegang_iup']||'';
     c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="pemegang_iup"><option value="">Semua Perusahaan</option>${names.map(v=>`<option value="${String(v).replace(/"/g,'&quot;')}"${cur===v?' selected':''}>${v}</option>`).join('')}</select>`);
@@ -766,10 +998,10 @@ function buildFilters(){
     const lbl=({status_iup:'Status',komoditas:'Komoditas',lokasi:'Kabupaten',dokumen:'Dokumen',nama_bank:'Bank'})[fk]||fk;
     c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="${fk}"><option value="">Semua ${lbl}</option>${vals.map(v=>`<option value="${String(v).replace(/"/g,'&quot;')}"${cur===String(v)?' selected':''}>${v}</option>`).join('')}</select>`);
   });
-  c.insertAdjacentHTML('beforeend',`<button class="btn btn-ghost" id="reset-btn" style="font-size:11px;">Reset</button>`);
-  $('#si').addEventListener('input',e=>{S.search=e.target.value.toLowerCase();renderTable();});
-  c.querySelectorAll('[data-f]').forEach(sel=>sel.addEventListener('change',e=>{const k=e.target.dataset.f,v=e.target.value;if(v==='')delete S.filters[k];else S.filters[k]=v;renderTable();}));
-  $('#reset-btn').addEventListener('click',()=>{S.filters={};S.search='';S.sort={col:null,dir:'asc'};buildFilters();renderTable();});
+  c.insertAdjacentHTML('beforeend',`<button class="btn btn-ghost" id="reset-btn" style="font-size:10.5px;">Reset</button>`);
+  $('#si').addEventListener('input',e=>{S.search=e.target.value.toLowerCase();S.page=1;renderTable();});
+  c.querySelectorAll('[data-f]').forEach(sel=>sel.addEventListener('change',e=>{const k=e.target.dataset.f,v=e.target.value;if(v==='')delete S.filters[k];else S.filters[k]=v;S.page=1;renderTable();}));
+  $('#reset-btn').addEventListener('click',()=>{S.filters={};S.search='';S.sort={col:null,dir:'asc'};S.page=1;buildFilters();renderTable();});
 }
 
 // ============================================================
@@ -818,66 +1050,106 @@ function renderTable(){
   const filtered=applyFilter(allRows), sorted=applySort(filtered);
   const cols=cfg.fields.filter(f=>!f.hidden&&!f.formOnly);
   const tbl=$('#tbl');
-  const head=`<thead><tr>${cols.map(c=>{const sc=S.sort.col===c.k?(S.sort.dir==='asc'?'asc':'dsc'):(c.sort?'sa':'');return`<th class="${sc}" data-col="${c.k}" style="width:${c.w||'auto'}">${c.l}</th>`;}).join('')}<th style="width:56px"></th></tr></thead>`;
+  const showActions = isAdmin();
+  const head=`<thead><tr>${cols.map(c=>{const sc=S.sort.col===c.k?(S.sort.dir==='asc'?'asc':'dsc'):(c.sort?'sa':'');return`<th class="${sc}" data-col="${c.k}" style="width:${c.w||'auto'}">${c.l}</th>`;}).join('')}${showActions?'<th style="width:48px"></th>':''}</tr></thead>`;
   let body='';
+  let pageRows = sorted;
+  const totalPages = cfg.grouped ? 0 : Math.ceil(sorted.length / PAGE_SIZE);
+
   if(!sorted.length){
-    body=`<tbody><tr><td colspan="${cols.length+1}"><div class="empty"><div class="big">Tidak ada data</div><div>Ubah filter atau tambah data baru</div></div></td></tr></tbody>`;
+    body=`<tbody><tr><td colspan="${cols.length+(showActions?1:0)}"><div class="empty"><div class="big">Tidak ada data</div><div>Ubah filter atau tambah data baru</div></div></td></tr></tbody>`;
   } else if(cfg.grouped){
-    body=buildGroupedBody(sorted,cols);
+    body=buildGroupedBody(sorted,cols,showActions);
   } else {
-    body=`<tbody>${sorted.map(row=>`<tr data-id="${row.id}">${cols.map(c=>{const raw=row[c.k];const val=c.render?c.render(raw,row):(raw??'—');return`<td class="${c.cls||''}">${val}</td>`;}).join('')}<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td></tr>`).join('')}</tbody>`;
+    if(totalPages > 1){
+      if(S.page > totalPages) S.page = totalPages;
+      const start = (S.page - 1) * PAGE_SIZE;
+      pageRows = sorted.slice(start, start + PAGE_SIZE);
+    }
+    body=`<tbody>${pageRows.map(row=>`<tr data-id="${row.id}">${cols.map(c=>{const raw=row[c.k];const val=c.render?c.render(raw,row):(raw??'—');return`<td class="${c.cls||''}">${val}</td>`;}).join('')}${showActions?`<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td>`:''}</tr>`).join('')}</tbody>`;
   }
   tbl.innerHTML=head+body;
+
+  // Pagination
+  const pw=$('#pagi-wrap');
+  if(!cfg.grouped && totalPages > 1){
+    const start = (S.page-1)*PAGE_SIZE+1, end = Math.min(S.page*PAGE_SIZE, sorted.length);
+    let ph=`<div class="pagi"><button ${S.page<=1?'disabled':''}onclick="S.page--;renderTable()">‹ Prev</button>`;
+    const maxBtn=7, half=Math.floor(maxBtn/2);
+    let s=Math.max(1,S.page-half), e=Math.min(totalPages,s+maxBtn-1);
+    if(e-s<maxBtn-1) s=Math.max(1,e-maxBtn+1);
+    if(s>1) ph+=`<button onclick="S.page=1;renderTable()">1</button>`;
+    if(s>2) ph+=`<span class="pagi-info">…</span>`;
+    for(let i=s;i<=e;i++) ph+=`<button class="${i===S.page?'active':''}" onclick="S.page=${i};renderTable()">${i}</button>`;
+    if(e<totalPages-1) ph+=`<span class="pagi-info">…</span>`;
+    if(e<totalPages) ph+=`<button onclick="S.page=${totalPages};renderTable()">${totalPages}</button>`;
+    ph+=`<button ${S.page>=totalPages?'disabled':''}onclick="S.page++;renderTable()">Next ›</button>`;
+    ph+=`<span class="pagi-info">${start}–${end} dari ${sorted.length}</span></div>`;
+    pw.innerHTML=ph;
+  } else {
+    pw.innerHTML='';
+  }
+
   tbl.querySelectorAll('th[data-col]').forEach(th=>{
     const f=cols.find(c=>c.k===th.dataset.col);if(!f||!f.sort)return;
-    th.addEventListener('click',()=>{const col=th.dataset.col;if(S.sort.col===col)S.sort.dir=S.sort.dir==='asc'?'desc':'asc';else{S.sort.col=col;S.sort.dir='asc';}renderTable();});
+    th.addEventListener('click',()=>{const col=th.dataset.col;if(S.sort.col===col)S.sort.dir=S.sort.dir==='asc'?'desc':'asc';else{S.sort.col=col;S.sort.dir='asc';}S.page=1;renderTable();});
   });
-  tbl.querySelectorAll('.ra.edit').forEach(b=>b.addEventListener('click',e=>openEdit(parseInt(e.currentTarget.dataset.id))));
-  tbl.querySelectorAll('.ra.del').forEach(b=>b.addEventListener('click',e=>openDel(parseInt(e.currentTarget.dataset.id))));
+  if(showActions){
+    tbl.querySelectorAll('.ra.edit').forEach(b=>b.addEventListener('click',e=>openEdit(parseInt(e.currentTarget.dataset.id))));
+    tbl.querySelectorAll('.ra.del').forEach(b=>b.addEventListener('click',e=>openDel(parseInt(e.currentTarget.dataset.id))));
+  }
   const dispCount=cfg.grouped?new Set(sorted.map(r=>r.pemegang_iup)).size:sorted.length;
-  $('#rc').textContent=cfg.grouped?`${dispCount} perusahaan (${sorted.length} baris)`:(`${sorted.length} / ${allRows.length}`);
+  $('#rc').textContent=cfg.grouped?`${dispCount} perusahaan (${sorted.length} baris)`:(`${pageRows.length} / ${sorted.length}`);
   $('#tsum').innerHTML=cfg.summary?cfg.summary(sorted):'';
+
+  // Show/hide group toolbar
+  $('#grp-toolbar').style.display=cfg.grouped?'flex':'none';
+
+  // Apply expiry warnings
+  if(cfg.grouped) applyGroupedExpiryWarnings();
+  else applyExpiryWarnings();
 }
 
-function buildGroupedBody(rows,cols){
+function buildGroupedBody(rows,cols,showActions){
   const groups=new Map();
   rows.forEach(r=>{const k=r.pemegang_iup||'(tidak ada)';if(!groups.has(k))groups.set(k,[]);groups.get(k).push(r);});
   let html='<tbody>';
+  let gi=0;
   groups.forEach((grows,nama)=>{
+    const gid='g'+gi++;
     const tj=grows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
     const tr=sumRencanaDedup(grows);
     const pct=tr>0?(tj/tr*100).toFixed(1).replace('.',',')+'%':null;
 
-    // Teks di bawah nama: ambil nilai periode_ke (OP) atau tahun (EKS) yang unik
-    const periodeField = S.tab==='rek_eks' ? 'tahun' : 'periode_ke';
-    const periodeVals = [...new Set(grows.map(r=>r[periodeField]).filter(x=>x!=null&&String(x).trim()!==''))];
-    const periodeLabel = periodeVals.join(' · ');
-
-    // Range tahun jaminan untuk info tambahan
-    const allTahuns=grows.map(r=>r.tahun_jaminan||'').filter(Boolean);
-    const allNums=[];
-    allTahuns.forEach(t=>{
-      const matches=String(t).match(/\d{4}/g);
-      if(matches) matches.forEach(y=>allNums.push(parseInt(y)));
-    });
-    let tahunLabel='';
-    if(allNums.length){
-      const mn=Math.min(...allNums), mx=Math.max(...allNums);
-      tahunLabel=mn===mx?String(mn):`${mn} – ${mx}`;
-    }
-
-    html+=`<tr class="group-header"><td colspan="${cols.length+1}" style="padding:12px 14px;">
-      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;">
+    html+=`<tr class="group-header" data-gid="${gid}" onclick="toggleGroup(this,event)"><td colspan="${cols.length+(showActions?1:0)}" style="padding:10px 12px;">
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
         <div>
+          <span class="group-chevron">▶</span>
           <span class="group-name">${nama}</span>
-          <span style="margin-left:10px;font-size:11px;color:var(--tx-d);font-family:'Martian Mono',monospace;">${grows.length} baris</span>
+          <span style="margin-left:8px;font-size:10px;color:var(--tx-d);font-family:'JetBrains Mono',monospace;">${grows.length} baris</span>
         </div>
-        <div style="display:flex;gap:12px;align-items:center;font-size:11.5px;font-family:'Martian Mono',monospace;">
+        <div style="display:flex;gap:10px;align-items:center;font-size:10.5px;font-family:'JetBrains Mono',monospace;" onclick="event.stopPropagation()">
           <span style="color:var(--tx-d)">Rencana: <strong style="color:var(--tx)">${fmt.rpS(tr)}</strong></span>
-          <span style="color:var(--tx-d)">Jaminan: <strong style="color:var(--ac)">${fmt.rpS(tj)}</strong>${pct?` <span style="font-size:10px;padding:1px 5px;border-radius:3px;background:var(--ac-s);color:var(--ac)">${pct}</span>`:''}</span>
-          <button data-tab="${S.tab}" data-nama="${nama.replace(/"/g,'&quot;')}" onclick="(function(b){const t=b.dataset.tab,n=b.dataset.nama;t==='rek_eks'?printEks(event,n):printCompany(event,n)})(this)"\
-            style="display:inline-flex;align-items:center;gap:5px;background:var(--ac-s);border:1px solid var(--ac-d);border-radius:7px;padding:5px 11px;color:var(--ac);font-family:'Outfit',sans-serif;font-size:11.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .15s;"\
-            onmouseover="this.style.background='var(--ac)';this.style.color='#fff'"\
+          <span style="color:var(--tx-d)">Jaminan: <strong style="color:var(--ac)">${fmt.rpS(tj)}</strong>${pct?` <span style="font-size:9px;padding:1px 4px;border-radius:3px;background:var(--ac-s);color:var(--ac)">${pct}</span>`:''}</span>
+          ${DRIVE[nama]?`<button onclick="window.open('${DRIVE[nama].replace(/'/g,"\\'")}','_blank')"
+            style="display:inline-flex;align-items:center;gap:4px;background:#e8f5e9;border:1px solid #a5d6a7;border-radius:6px;padding:4px 10px;color:#2e7d32;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s;"
+            onmouseover="this.style.background='#2e7d32';this.style.color='#fff'"
+            onmouseout="this.style.background='#e8f5e9';this.style.color='#2e7d32'">
+            📂 Buka
+          </button>`:`${isAdmin()?`<button onclick="setDriveLink('${nama.replace(/'/g,"\\'")}')"
+            style="display:inline-flex;align-items:center;gap:4px;background:#fff3e0;border:1px solid #ffcc80;border-radius:6px;padding:4px 10px;color:#e65100;font-family:'Inter',sans-serif;font-size:10.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s;"
+            onmouseover="this.style.background='#e65100';this.style.color='#fff'"
+            onmouseout="this.style.background='#fff3e0';this.style.color='#e65100'">
+            🔗 Set Link
+          </button>`:''}`}
+          ${DRIVE[nama]&&isAdmin()?`<button onclick="setDriveLink('${nama.replace(/'/g,"\\'")}')"
+            style="display:inline-flex;align-items:center;gap:3px;background:transparent;border:1px solid var(--bd);border-radius:6px;padding:4px 6px;color:var(--tx-d);font-size:10px;cursor:pointer;transition:all .12s;"
+            onmouseover="this.style.borderColor='var(--ac)';this.style.color='var(--ac)'"
+            onmouseout="this.style.borderColor='var(--bd)';this.style.color='var(--tx-d)'"
+            title="Edit link Google Drive">✏️</button>`:``}
+          <button data-tab="${S.tab}" data-nama="${nama.replace(/"/g,'&quot;')}" onclick="(function(b){const t=b.dataset.tab,n=b.dataset.nama;t==='rek_eks'?printEks(event,n):printCompany(event,n)})(this)"
+            style="display:inline-flex;align-items:center;gap:4px;background:var(--ac-s);border:1px solid var(--ac-d);border-radius:6px;padding:4px 10px;color:var(--ac);font-family:'Inter',sans-serif;font-size:10.5px;font-weight:500;cursor:pointer;white-space:nowrap;transition:all .12s;"
+            onmouseover="this.style.background='var(--ac)';this.style.color='#fff'"
             onmouseout="this.style.background='var(--ac-s)';this.style.color='var(--ac)'">
             🖨 Cetak
           </button>
@@ -886,14 +1158,11 @@ function buildGroupedBody(rows,cols){
     </td></tr>`;
 
     grows.forEach(row=>{
-      html+=`<tr class="child-row" data-id="${row.id}">`;
+      html+=`<tr class="child-row" data-gid="${gid}" data-id="${row.id}">`;
       cols.forEach(c=>{
         if(c.k==='pemegang_iup'){
-          // Show periode_ke (OP) or tahun (EKS) — the value set in form edit
           const periodeVal = S.tab==='rek_eks' ? (row.tahun||'—') : (row.periode_ke!=null&&String(row.periode_ke).trim()!=='' ? row.periode_ke : '—');
-          html+=`<td style="padding-left:28px;">
-            <span class="year-tag">${periodeVal}</span>
-          </td>`;
+          html+=`<td style="padding-left:24px;"><span class="year-tag">${periodeVal}</span></td>`;
         } else if(c.k==='tahun_jaminan'){
           html+=`<td><span class="year-tag">${row.tahun_jaminan||'—'}</span></td>`;
         } else {
@@ -902,13 +1171,159 @@ function buildGroupedBody(rows,cols){
           html+=`<td class="${c.cls||''}">${val}</td>`;
         }
       });
-      html+=`<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td></tr>`;
+      if(showActions){
+        html+=`<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td>`;
+      }
+      html+=`</tr>`;
     });
   });
   return html+'</tbody>';
 }
 
-// (inline year edit removed — editing via modal ✏️ button)
+function toggleGroup(headerTr, event) {
+  if (event.target.closest('button')) return;
+  const gid = headerTr.dataset.gid;
+  const expanded = headerTr.classList.toggle('expanded');
+  headerTr.closest('tbody').querySelectorAll(`tr.child-row[data-gid="${gid}"]`).forEach(r => {
+    r.classList.toggle('show', expanded);
+  });
+}
+
+function toggleAllGroups(expand) {
+  const tbl = $('#tbl');
+  tbl.querySelectorAll('tr.group-header').forEach(h => {
+    h.classList.toggle('expanded', expand);
+  });
+  tbl.querySelectorAll('tr.child-row').forEach(r => {
+    r.classList.toggle('show', expand);
+  });
+}
+
+// ============================================================
+// EXPIRY WARNINGS
+// ============================================================
+const EXPIRY_WARN_MONTHS = 12;
+
+function getExpiryStatus(dateVal) {
+  if (!dateVal) return null;
+  const now = new Date();
+  const exp = new Date(dateVal);
+  if (isNaN(exp.getTime())) return null;
+  const warnDate = new Date(now.getFullYear() + 1, now.getMonth(), now.getDate());
+  if (exp <= now) {
+    return { cls: 'exp-past', label: 'EXPIRED' };
+  } else if (exp <= warnDate) {
+    const ms = exp - now;
+    const months = Math.max(1, Math.ceil(ms / (1000 * 60 * 60 * 24 * 30)));
+    return { cls: 'exp-soon', label: months + ' bln lagi' };
+  }
+  return null;
+}
+
+function getEndYearFromPeriod(val) {
+  if (!val) return null;
+  const s = String(val);
+  const m = s.match(/(\d{4})\s*[-–]\s*(\d{4})/);
+  if (m) return parseInt(m[2]);
+  const y = parseInt(s);
+  return y > 1900 && y < 2200 ? y : null;
+}
+
+function applyExpiryWarnings() {
+  const tbl = $('#tbl');
+  let warnCount = 0;
+  const tab = S.tab;
+  const arr = tab === 'iup_op' ? DB.iup.filter(r => r.status_iup === 'IUP OP')
+            : tab === 'iup_eks' ? DB.iup.filter(r => r.status_iup === 'IUP Ekspl.')
+            : DB.iup;
+
+  tbl.querySelectorAll('tbody tr[data-id]').forEach(tr => {
+    const id = parseInt(tr.dataset.id);
+    const row = arr.find(r => r.id === id);
+    if (!row) return;
+
+    const status = getExpiryStatus(row.tgl_berakhir);
+    if (status) {
+      tr.classList.add('expiring');
+      const nameCell = tr.querySelector('.nm');
+      if (nameCell && !nameCell.querySelector('.exp-badge')) {
+        nameCell.insertAdjacentHTML('beforeend', ` <span class="exp-badge ${status.cls}">${status.label}</span>`);
+      }
+      warnCount++;
+    }
+  });
+
+  const warnEl = $('#grp-warn-count');
+  if (warnEl) warnEl.textContent = warnCount > 0 ? `⚠ ${warnCount} IUP mendekati/sudah expired` : '';
+}
+
+function applyGroupedExpiryWarnings() {
+  const tbl = $('#tbl');
+  let warnCount = 0;
+  const isEks = S.tab === 'rek_eks';
+  const arr = isEks ? DB.reklamasi_eks : DB.reklamasi_op;
+
+  tbl.querySelectorAll('tr.group-header').forEach(hdr => {
+    const gid = hdr.dataset.gid;
+    const childRows = tbl.querySelectorAll(`tr.child-row[data-gid="${gid}"]`);
+    let maxEndYear = 0;
+
+    childRows.forEach(cr => {
+      const id = parseInt(cr.dataset.id);
+      const row = arr.find(r => r.id === id);
+      if (!row) return;
+      const periodField = isEks ? row.tahun : row.periode_ke;
+      const ey = getEndYearFromPeriod(periodField);
+      if (ey && ey > maxEndYear) maxEndYear = ey;
+    });
+
+    if (maxEndYear > 0) {
+      const endDate = new Date(maxEndYear, 11, 31);
+      const status = getExpiryStatus(endDate);
+      if (status) {
+        hdr.classList.add('expiring');
+        const nameEl = hdr.querySelector('.group-name');
+        if (nameEl && !nameEl.querySelector('.exp-badge')) {
+          nameEl.insertAdjacentHTML('beforeend', ` <span class="exp-badge ${status.cls}">${status.label}</span>`);
+        }
+        warnCount++;
+      }
+    }
+  });
+
+  const warnEl = $('#grp-warn-count');
+  if (warnEl) warnEl.textContent = warnCount > 0 ? `⚠ ${warnCount} perusahaan mendekati/sudah expired` : '';
+}
+
+// ============================================================
+// DRIVE LINK
+// ============================================================
+async function setDriveLink(nama) {
+  const existing = DRIVE[nama] || '';
+  const url = prompt('Paste link folder Google Drive untuk:\n' + nama, existing);
+  if (url === null) return;
+  const trimmed = url.trim();
+  if (!trimmed) {
+    if (existing) {
+      const { error } = await sb.from('drive_links').delete().eq('pemegang_iup', nama);
+      if (error) { toast('Gagal hapus link: ' + error.message, 'e'); return; }
+      delete DRIVE[nama];
+      toast('Link dihapus untuk ' + nama);
+    }
+    renderTable();
+    return;
+  }
+  if (existing) {
+    const { error } = await sb.from('drive_links').update({ drive_url: trimmed, updated_at: new Date().toISOString() }).eq('pemegang_iup', nama);
+    if (error) { toast('Gagal update: ' + error.message, 'e'); return; }
+  } else {
+    const { error } = await sb.from('drive_links').insert({ pemegang_iup: nama, drive_url: trimmed });
+    if (error) { toast('Gagal simpan: ' + error.message, 'e'); return; }
+  }
+  DRIVE[nama] = trimmed;
+  toast('Link tersimpan untuk ' + nama);
+  renderTable();
+}
 
 // ============================================================
 // TABS
@@ -916,19 +1331,15 @@ function buildGroupedBody(rows,cols){
 $('#tabs').addEventListener('click',e=>{
   const btn=e.target.closest('.tab');if(!btn)return;
   $$('.tab').forEach(b=>b.classList.remove('active'));btn.classList.add('active');
-  S.tab=btn.dataset.tab;S.filters={};S.search='';S.sort={col:null,dir:'asc'};
+  S.tab=btn.dataset.tab;S.filters={};S.search='';S.sort={col:null,dir:'asc'};S.page=1;
   buildFilters();renderTable();
 });
 
 function setDataTab(tab){
-  S.tab=tab;
-  S.filters={};
-  S.search='';
-  S.sort={col:null,dir:'asc'};
+  S.tab=tab;S.filters={};S.search='';S.sort={col:null,dir:'asc'};S.page=1;
   $$('.tab').forEach(b=>b.classList.toggle('active',b.dataset.tab===tab));
   $('#data-title').textContent=TABS[tab]?.label||'Data';
-  buildFilters();
-  renderTable();
+  buildFilters();renderTable();
 }
 
 function switchView(view, tab){
@@ -952,6 +1363,7 @@ function getRowById(id){
 }
 
 function openAdd(){
+  if(!isAdmin()) return;
   S.editId=null;
   const cfg=TABS[S.tab];
   $('#m-title').textContent='Tambah Data — '+cfg.label;
@@ -962,6 +1374,7 @@ function openAdd(){
 }
 
 function openEdit(id){
+  if(!isAdmin()) return;
   S.editId=id;
   const row=getRowById(id);if(!row)return;
   const cfg=TABS[S.tab];
@@ -973,13 +1386,12 @@ function openEdit(id){
 }
 
 function buildForm(fields,row){
-  // Separate context fields (formOnly) from data fields
   const ctxFields  = fields.filter(f=>f.formOnly&&!f.hidden);
   const dataFields = fields.filter(f=>!f.formOnly&&!f.hidden);
 
   function renderField(f){
     const v=row?(row[f.k]??''):'';
-    const hint=f.hint?`<span style="font-size:10px;color:var(--tx-d);margin-top:2px;">${f.hint}</span>`:'';
+    const hint=f.hint?`<span style="font-size:9.5px;color:var(--tx-d);margin-top:1px;">${f.hint}</span>`:'';
     if(f.type==='select')return`<div class="fg"><label>${f.l}</label><select name="${f.k}">${(f.opts||[]).map(o=>`<option value="${o}"${String(v)===o?' selected':''}>${o||'(kosong)'}</option>`).join('')}</select>${hint}</div>`;
     const t=f.type==='number'?'number':f.type==='date'?'date':'text';
     let dv=v;if(f.type==='date'&&v)try{dv=new Date(v).toISOString().split('T')[0];}catch(e){}
@@ -991,13 +1403,9 @@ function buildForm(fields,row){
   if(ctxFields.length){
     const isRekOp = S.tab === 'rek_op';
     const divLabel = isRekOp ? 'Identitas Baris' : 'Info Tambahan';
-    html+=`<div class="fg full" style="margin-bottom:4px;">
-      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-d);font-family:'Martian Mono',monospace;padding-bottom:8px;border-bottom:1px dashed var(--bdr);margin-bottom:4px;">${divLabel}</div>
-    </div>`;
+    html+=`<div class="fg full" style="margin-bottom:2px;"><div style="font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-d);font-family:'JetBrains Mono',monospace;font-weight:500;padding-bottom:6px;border-bottom:1px dashed var(--bdr);margin-bottom:2px;">${divLabel}</div></div>`;
     html+=ctxFields.map(renderField).join('');
-    html+=`<div class="fg full" style="margin:4px 0;">
-      <div style="font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--tx-d);font-family:'Martian Mono',monospace;padding-bottom:8px;border-bottom:1px dashed var(--bdr);margin-top:8px;margin-bottom:4px;">Data IUP</div>
-    </div>`;
+    html+=`<div class="fg full" style="margin:2px 0;"><div style="font-size:9.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--tx-d);font-family:'JetBrains Mono',monospace;font-weight:500;padding-bottom:6px;border-bottom:1px dashed var(--bdr);margin-top:6px;margin-bottom:2px;">Data IUP</div></div>`;
   }
   html+=dataFields.map(renderField).join('');
   $('#m-fields').innerHTML=html;
@@ -1007,16 +1415,15 @@ $('#m-cancel').addEventListener('click',()=>$('#m-form').classList.remove('open'
 $('#m-form').addEventListener('click',e=>{if(e.target.id==='m-form')$('#m-form').classList.remove('open');});
 
 $('#m-save').addEventListener('click',async()=>{
+  if(!isAdmin()) return;
   const cfg=TABS[S.tab];
   const obj={};
-  // DB columns that must always be numeric regardless of form input type
   const numericDBCols = new Set(['luas_ha','jumlah_rencana','jumlah_jaminan','no']);
   cfg.fields.filter(f=>!f.hidden).forEach(f=>{
     const el=$('#m-fields').querySelector(`[name="${f.k}"]`);
     if(!el)return;
     let v=el.value.trim();
     if(v===''){obj[f.k]=null;return;}
-    // Parse to number if field type is number OR if column is known numeric in DB
     if(f.type==='number'||numericDBCols.has(f.k)){
       const n=parseFloat(v);
       obj[f.k]=isNaN(n)?null:n;
@@ -1031,7 +1438,6 @@ $('#m-save').addEventListener('click',async()=>{
   try{
     if(S.editId!==null){
       await updateRow(S.tab,S.editId,obj);
-      // Update local cache
       const arr=S.tab==='rek_op'?DB.reklamasi_op:S.tab==='rek_eks'?DB.reklamasi_eks:DB.iup;
       const i=arr.findIndex(r=>r.id===S.editId);
       if(i>=0)Object.assign(arr[i],obj);
@@ -1043,9 +1449,7 @@ $('#m-save').addEventListener('click',async()=>{
       toast('Data baru berhasil ditambahkan','s');
     }
     $('#m-form').classList.remove('open');
-    updateLastSync();
-    saveCache();
-    refreshUI();
+    updateLastSync();saveCache();refreshUI();
   }catch(err){
     toast('Gagal menyimpan: '+err.message,'e');
   }finally{
@@ -1059,6 +1463,7 @@ $('#btn-add').addEventListener('click',openAdd);
 // ============================================================
 let delId=null;
 function openDel(id){
+  if(!isAdmin()) return;
   delId=id;
   const row=getRowById(id);
   $('#del-msg').textContent=`Hapus "${row?.nama||row?.pemegang_iup||'ID '+id}"?`;
@@ -1067,7 +1472,7 @@ function openDel(id){
 $('#d-cancel').addEventListener('click',()=>{$('#m-del').classList.remove('open');delId=null;});
 $('#m-del').addEventListener('click',e=>{if(e.target.id==='m-del'){$('#m-del').classList.remove('open');delId=null;}});
 $('#d-confirm').addEventListener('click',async()=>{
-  if(delId===null)return;
+  if(delId===null||!isAdmin())return;
   $('#d-confirm').disabled=true;$('#d-confirm').textContent='Menghapus…';
   try{
     await deleteRow(S.tab,delId);
@@ -1088,7 +1493,10 @@ $('#d-confirm').addEventListener('click',async()=>{
 // UPLOAD EXCEL
 // ============================================================
 let uploadedSheets={};
-$('#btn-xl').addEventListener('click',()=>{uploadedSheets={};$('#uprev-wrap').style.display='none';$('#umap').style.display='none';$('#finput').value='';$('#m-upload').classList.add('open');});
+$('#btn-xl').addEventListener('click',()=>{
+  if(!isAdmin()) return;
+  uploadedSheets={};$('#uprev-wrap').style.display='none';$('#umap').style.display='none';$('#finput').value='';$('#m-upload').classList.add('open');
+});
 $('#u-cancel').addEventListener('click',()=>$('#m-upload').classList.remove('open'));
 $('#m-upload').addEventListener('click',e=>{if(e.target.id==='m-upload')$('#m-upload').classList.remove('open');});
 const uz=$('#uzone');
@@ -1118,15 +1526,13 @@ function showPreview(name){
   if(!rows.length){$('#uprev').innerHTML='<em>Kosong</em>';$('#uprev-wrap').style.display='block';return;}
   const keys=Object.keys(rows[0]);
   const prev=rows.slice(0,3).map((r,i)=>`<div><strong>R${i+1}:</strong> ${keys.map(k=>`${k}: ${r[k]!=null?r[k]:'—'}`).join(' | ')}</div>`).join('');
-  $('#uprev').innerHTML=`<strong>${rows.length} baris · ${keys.length} kolom</strong><br>Kolom: ${keys.join(', ')}<hr style="border-color:#1f2823;margin:7px 0">${prev}${rows.length>3?`<em>...+${rows.length-3} lainnya</em>`:''}`;
+  $('#uprev').innerHTML=`<strong>${rows.length} baris · ${keys.length} kolom</strong><br>Kolom: ${keys.join(', ')}<hr style="border-color:var(--bdr);margin:6px 0">${prev}${rows.length>3?`<em>...+${rows.length-3} lainnya</em>`:''}`;
   $('#uprev-wrap').style.display='block';
 }
 function excelSerialToStr(serial) {
-  // Excel serial: hari sejak 1 Jan 1900 (dengan bug leap year 1900)
   const utc_days = Math.floor(serial - 25569);
   const utc_value = utc_days * 86400;
   const d = new Date(utc_value * 1000);
-  // Pakai UTC get agar tidak kena offset lokal
   const yr = d.getUTCFullYear();
   const mo = String(d.getUTCMonth()+1).padStart(2,'0');
   const dy = String(d.getUTCDate()).padStart(2,'0');
@@ -1152,6 +1558,7 @@ function mapRows(rows){
   });
 }
 $('#u-replace').addEventListener('click',async()=>{
+  if(!isAdmin()) return;
   const sheet=$('#ssheet').value, rows=uploadedSheets[sheet];
   if(!rows?.length){toast('Tidak ada data','e');return;}
   const mapped=mapRows(rows);
@@ -1166,6 +1573,7 @@ $('#u-replace').addEventListener('click',async()=>{
   finally{$('#u-replace').disabled=false;$('#u-replace').textContent='Ganti Semua';}
 });
 $('#u-append').addEventListener('click',async()=>{
+  if(!isAdmin()) return;
   const sheet=$('#ssheet').value, rows=uploadedSheets[sheet];
   if(!rows?.length){toast('Tidak ada data','e');return;}
   const mapped=mapRows(rows);
@@ -1186,22 +1594,14 @@ $('#u-append').addEventListener('click',async()=>{
 $('#btn-export').addEventListener('click',()=>{
   const cfg=TABS[S.tab];
   const rows=applyFilter(applySort(getData(S.tab)));
-
-  // Build clean export rows — include all fields (formOnly included) except hidden
   const exportFields = cfg.fields.filter(f=>!f.hidden).map(f=>f.k);
-  // For rek_op, periode_ke is already in fields as formOnly so it's included
-
   const exportRows = rows.map(row=>{
     const obj={};
-    // Add periode_ke first for rek_op so grouped context is clear
     if(S.tab==='rek_op') obj['periode_ke']=row.periode_ke;
     exportFields.forEach(k=>{ obj[k]=row[k]??''; });
     return obj;
   });
-
   const ws=XLSX.utils.json_to_sheet(exportRows);
-
-  // Set column widths
   const colWidths=exportFields.map(k=>{
     if(['pemegang_iup','nama','no_sk_pengesahan'].includes(k))return{wch:36};
     if(['jumlah_jaminan','jumlah_rencana'].includes(k))return{wch:20};
@@ -1209,16 +1609,14 @@ $('#btn-export').addEventListener('click',()=>{
     return{wch:14};
   });
   ws['!cols']=colWidths;
-
   const wb=XLSX.utils.book_new();
-  const sheetLabel=cfg.label.substring(0,31); // Excel max sheet name length
-  XLSX.utils.book_append_sheet(wb,ws,sheetLabel);
+  XLSX.utils.book_append_sheet(wb,ws,cfg.label.substring(0,31));
   XLSX.writeFile(wb,`reklamasi_${S.tab}_${new Date().toISOString().slice(0,10)}.xlsx`);
   toast(`Export ${rows.length} baris berhasil`,'s');
 });
 
 // ============================================================
-// REFRESH UI (no network)
+// REFRESH UI
 // ============================================================
 function refreshUI(){
   updateKPIs();
@@ -1234,31 +1632,30 @@ function setSyncAge(ts) {
 }
 
 // ============================================================
-// INIT — cache-first (runs last, after all vars/functions ready)
+// START APP (after login)
 // ============================================================
-(async()=>{
-  const cache = loadCache();
+async function startApp() {
+  applyRole();
+  $('#loading').classList.add('show');
 
+  const cache = loadCache();
   if (cache) {
-    // Have cache → tampil langsung, fetch di background
     DB.iup          = cache.data.iup;
     DB.reklamasi_op = cache.data.reklamasi_op;
     DB.reklamasi_eks= cache.data.reklamasi_eks;
     refreshUI();
     showApp();
-    setConnStatus(true, 'MEMPERBARUI DATA…');
+    setConnStatus(true, 'MEMPERBARUI…');
     try {
       await fetchAll();
       saveCache();
       setConnStatus(true, 'SUPABASE · TERSINKRON');
       refreshUI();
     } catch(err) {
-      setConnStatus(false, 'OFFLINE — DATA DARI CACHE');
+      setConnStatus(false, 'OFFLINE — CACHE');
       setSyncAge(cache.ts);
     }
-
   } else {
-    // Pertama kali — tunggu Supabase
     setLoadMsg('Memuat data pertama kali…');
     try {
       await fetchAll();
@@ -1272,6 +1669,17 @@ function setSyncAge(ts) {
       setTimeout(showApp, 2000);
       toast('Gagal terhubung: ' + err.message, 'e');
     }
+  }
+}
+
+// Auto-login from session
+(function(){
+  const saved = _ss.get('rek_role');
+  if (saved === 'admin' || saved === 'viewer') {
+    USER_ROLE = saved;
+    USER_DISPLAY = _ss.get('rek_display') || (saved === 'admin' ? 'Admin' : 'Viewer');
+    document.getElementById('login-screen').style.display = 'none';
+    startApp();
   }
 })();
 
@@ -1288,36 +1696,20 @@ function printEks(e, nama) {
   const tr = sumRencanaDedup(rows);
   const pct = tr > 0 ? (tj/tr*100).toFixed(1)+'%' : '—';
 
-  // Group by tahun (periode IUP eksplorasi)
   const periodes = [...new Set(rows.map(r=>r.tahun).filter(Boolean))];
   const noPeriode = rows.filter(r=>!r.tahun);
 
   let rowsHtml = '';
-
   const renderRows = (rlist, periodeLabel) => {
     const dokRR = rlist.find(r=>r.dokumen)?.dokumen || '—';
     const noSK = rlist.find(r=>r.no_sk_pengesahan)?.no_sk_pengesahan || '—';
     const rencana = sumRencanaDedup(rlist);
     if (periodeLabel) {
-      rowsHtml += `<tr style="background:#f0f4f8;">
-        <td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">
-          Periode: ${periodeLabel}
-          <span style="font-weight:400;color:#475569;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#15803d':'#b91c1c'}">${dokRR}</strong></span>
-          <span style="font-weight:400;color:#475569;margin-left:12px;">No SK: ${noSK}</span>
-          <span style="font-weight:400;color:#475569;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span>
-        </td>
-      </tr>`;
+      rowsHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${periodeLabel} <span style="font-weight:400;color:#475569;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${dokRR}</strong></span> <span style="font-weight:400;color:#475569;margin-left:12px;">No SK: ${noSK}</span> <span style="font-weight:400;color:#475569;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
     }
     rlist.forEach((r,i) => {
       const sudah = r.no_deposito && r.jumlah_jaminan;
-      rowsHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}">
-        <td style="padding:7px 12px;color:#475569;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td>
-        <td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#b91c1c">Belum</span>'}</td>
-        <td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td>
-        <td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#0f172a':'#b91c1c'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td>
-        <td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#15803d':'#b91c1c'}">${r.dokumen||'—'}</td>
-        <td style="padding:7px 12px;font-size:11px;color:#64748b">${r.keterangan||''}</td>
-      </tr>`;
+      rowsHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${r.dokumen||'—'}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${r.keterangan||''}</td></tr>`;
     });
   };
 
@@ -1325,234 +1717,42 @@ function printEks(e, nama) {
   else renderRows(rows, null);
   if (noPeriode.length && periodes.length) renderRows(noPeriode, '(Periode tidak diisi)');
 
-  const html = `<!DOCTYPE html><html lang="id"><head>
-  <meta charset="UTF-8">
-  <title>Laporan Jaminan Reklamasi — ${nama}</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Outfit',sans-serif;font-size:13px;color:#0f172a;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    @media print{body{padding:16px 20px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}
-    .header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:10px;padding:20px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start;}
-    .co-name{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
-    .co-sub{font-size:11px;opacity:.75;letter-spacing:.05em;}
-    .badge-iup{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:500;}
-    .section-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #2563eb;color:#1e3a5f;}
-    table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12px;}
-    thead tr{background:#1e3a5f;color:#fff;}
-    thead th{padding:9px 12px;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
-    thead th:nth-child(4){text-align:right;}
-    tbody tr{border-bottom:1px solid #e2e8f0;}
-    .summary-bar{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 20px;display:flex;gap:32px;margin-top:8px;}
-    .sum-item{display:flex;flex-direction:column;gap:3px;}
-    .sum-label{font-size:10px;color:#475569;letter-spacing:.06em;text-transform:uppercase;}
-    .sum-val{font-size:17px;font-weight:800;font-family:'Outfit',sans-serif;}
-    .progress-wrap{margin-top:16px;}
-    .progress-label{display:flex;justify-content:space-between;font-size:11px;color:#475569;margin-bottom:4px;}
-    .progress-bg{background:#e2e8f0;border-radius:4px;height:10px;overflow:hidden;}
-    .progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#2563eb,#38bdf8);}
-    .footer{margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between;}
-    .btn-print{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:20px;}
-  </style>
-  </head><body>
-  <button class="btn-print no-print" onclick="window.print()">🖨 Cetak / Simpan PDF</button>
-  <div class="header-band">
-    <div>
-      <div class="co-name">${nama}</div>
-      <div class="co-sub">Laporan Reklamasi & Jaminan Eksplorasi · Dinas ESDM Aceh</div>
-    </div>
-    <div style="text-align:right;">
-      <div class="badge-iup">${iupInfo.status_iup||'IUP Eksplorasi'}</div>
-      <div style="font-size:11px;opacity:.7;margin-top:6px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div>
-      <div style="font-size:11px;opacity:.6;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div>
-    </div>
-  </div>
-  ${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 14px;margin-bottom:16px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}
-  <div class="section-title">Detail Rencana & Jaminan Reklamasi Eksplorasi</div>
-  <table>
-    <thead><tr>
-      <th>Tahun Jaminan</th>
-      <th>No Deposito / Bilyet</th>
-      <th>Bank</th>
-      <th style="text-align:right">Jaminan (Rp)</th>
-      <th>Dok RR</th>
-      <th>Keterangan</th>
-    </tr></thead>
-    <tbody>${rowsHtml}</tbody>
-  </table>
-  <div class="summary-bar">
-    <div class="sum-item"><span class="sum-label">Total Rencana Reklamasi</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div>
-    <div class="sum-item"><span class="sum-label">Total Jaminan Ditempatkan</span><span class="sum-val" style="color:#15803d">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div>
-    <div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#b91c1c':'#15803d'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div>
-    <div class="sum-item"><span class="sum-label">Persentase Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#15803d':'#b45309'}">${pct}</span></div>
-  </div>
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div>
-    <div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div>
-  </div>
-  <div class="footer">
-    <span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span>
-    <span>Dicetak: ${new Date().toLocaleString('id-ID')}</span>
-  </div>
-  </body></html>`;
+  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #2563eb;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#2563eb,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${nama}</div><div class="co-sub">Laporan Reklamasi & Jaminan Eksplorasi · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP Eksplorasi'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi Eksplorasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${rowsHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
 
   const w = window.open('', '_blank', 'width=1100,height=800');
   w.document.write(html);
   w.document.close();
 }
+
 function printCompany(e, nama) {
   e.stopPropagation();
   const rows = DB.reklamasi_op.filter(r => r.pemegang_iup === nama);
   if (!rows.length) { toast('Tidak ada data untuk '+nama, 'e'); return; }
-
-  // Get IUP info
   const iupInfo = DB.iup.find(x => x.nama === nama) || {};
-
-  // Compute summary
   const tj = rows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
   const tr = sumRencanaDedup(rows);
   const pct = tr>0?(tj/tr*100).toFixed(1)+'%':'—';
-
-  // Periods
   const periodes = [...new Set(rows.map(r=>r.periode_ke).filter(Boolean))].sort();
 
-  // Build table rows per periode
   let periodeHtml = '';
   periodes.forEach(p => {
     const pRows = rows.filter(r=>r.periode_ke==p);
     const dokRR = pRows.find(r=>r.dokumen)?.dokumen || '—';
     const noSK = pRows.find(r=>r.no_sk_pengesahan)?.no_sk_pengesahan || '—';
     const rencana = sumRencanaDedup(pRows);
-    const periodeLabel = pRows.find(r=>r.periode_ke==p)?.periode_ke || p;
-
-    periodeHtml += `
-      <tr style="background:#f0f4f8;">
-        <td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">
-          Periode: ${periodeLabel}
-          <span style="font-weight:400;color:#475569;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#15803d':'#b91c1c'}">${dokRR}</strong></span>
-          <span style="font-weight:400;color:#475569;margin-left:12px;">No SK: ${noSK}</span>
-          <span style="font-weight:400;color:#475569;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span>
-        </td>
-      </tr>`;
-
+    periodeHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${p} <span style="font-weight:400;color:#6b7280;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${dokRR}</strong></span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">No SK: ${noSK}</span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
     pRows.forEach((r,i) => {
       const sudah = r.no_deposito && r.jumlah_jaminan;
-      periodeHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}">
-        <td style="padding:7px 12px;color:#475569;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td>
-        <td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#b91c1c">Belum</span>'}</td>
-        <td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td>
-        <td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#0f172a':'#b91c1c'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td>
-        <td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#15803d':'#b91c1c'}">${r.dokumen||'—'}</td>
-        <td style="padding:7px 12px;font-size:11px;color:#64748b">${r.keterangan||''}</td>
-      </tr>`;
+      periodeHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${r.dokumen||'—'}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${r.keterangan||''}</td></tr>`;
     });
   });
 
-  const html = `<!DOCTYPE html><html lang="id"><head>
-  <meta charset="UTF-8">
-  <title>Laporan Jaminan Reklamasi — ${nama}</title>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700;9..40,800&display=swap" rel="stylesheet">
-  <style>
-    *{margin:0;padding:0;box-sizing:border-box;}
-    body{font-family:'Outfit',sans-serif;font-size:13px;color:#0f172a;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-    @media print{
-      body{padding:16px 20px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}
-      @page{size:A4 landscape;margin:15mm;}
-      .no-print{display:none;}
-      *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}
-    }
-    .header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:10px;padding:20px 24px;margin-bottom:24px;display:flex;justify-content:space-between;align-items:flex-start;}
-    .co-name{font-family:'Outfit',sans-serif;font-size:20px;font-weight:800;margin-bottom:4px;}
-    .co-sub{font-size:11px;opacity:.75;letter-spacing:.05em;}
-    .badge-iup{background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.3);border-radius:6px;padding:4px 10px;font-size:11px;font-weight:500;}
-    .meta-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:24px;}
-    .meta-card{background:#f8fafc;border:1px solid #e2e8f0;border-radius:8px;padding:12px 14px;}
-    .meta-label{font-size:9px;letter-spacing:.1em;text-transform:uppercase;color:#94a3b8;margin-bottom:4px;}
-    .meta-val{font-size:16px;font-weight:800;color:#0f172a;font-family:'Outfit',sans-serif;}
-    .meta-val.green{color:#15803d;}.meta-val.amber{color:#b45309;}
-    .section-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:800;margin-bottom:10px;padding-bottom:6px;border-bottom:2px solid #2563eb;color:#1e3a5f;}
-    table{width:100%;border-collapse:collapse;margin-bottom:20px;font-size:12px;}
-    thead tr{background:#1e3a5f;color:#fff;}
-    thead th{padding:9px 12px;text-align:left;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:600;}
-    thead th:last-child,thead th:nth-child(4){text-align:right;}
-    tbody tr{border-bottom:1px solid #e2e8f0;}
-    .summary-bar{background:#f0f7ff;border:1px solid #bfdbfe;border-radius:8px;padding:14px 20px;display:flex;gap:32px;margin-top:8px;}
-    .sum-item{display:flex;flex-direction:column;gap:3px;}
-    .sum-label{font-size:10px;color:#475569;letter-spacing:.06em;text-transform:uppercase;}
-    .sum-val{font-size:17px;font-weight:800;font-family:'Outfit',sans-serif;}
-    .progress-wrap{margin-top:16px;}
-    .progress-label{display:flex;justify-content:space-between;font-size:11px;color:#475569;margin-bottom:4px;}
-    .progress-bg{background:#e2e8f0;border-radius:4px;height:10px;overflow:hidden;}
-    .progress-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,#2563eb,#38bdf8);transition:width .5s;}
-    .footer{margin-top:24px;padding-top:12px;border-top:1px solid #e2e8f0;font-size:10px;color:#94a3b8;display:flex;justify-content:space-between;}
-    .btn-print{background:#2563eb;color:#fff;border:none;border-radius:8px;padding:10px 20px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:20px;}
-    .btn-print:hover{background:#1d4ed8;}
-  </style>
-  </head><body>
-  <button class="btn-print no-print" onclick="window.print()">🖨 Cetak / Simpan PDF</button>
-
-  <div class="header-band">
-    <div>
-      <div class="co-name">${nama}</div>
-      <div class="co-sub">Laporan Reklamasi & Jaminan · Dinas ESDM Aceh</div>
-    </div>
-    <div style="text-align:right;">
-      <div class="badge-iup">${iupInfo.status_iup||'IUP OP'}</div>
-      <div style="font-size:11px;opacity:.7;margin-top:6px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div>
-      <div style="font-size:11px;opacity:.6;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div>
-    </div>
-  </div>
-
-  ${iupInfo.nomor_sk ? `<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:6px;padding:8px 14px;margin-bottom:16px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>` : ''}
-
-  <div class="section-title">Detail Rencana & Jaminan Reklamasi</div>
-  <table>
-    <thead><tr>
-      <th>Tahun Jaminan</th>
-      <th>No Deposito / Bilyet</th>
-      <th>Bank</th>
-      <th style="text-align:right">Jaminan (Rp)</th>
-      <th>Dok RR</th>
-      <th>Keterangan</th>
-    </tr></thead>
-    <tbody>${periodeHtml}</tbody>
-  </table>
-
-  <div class="summary-bar">
-    <div class="sum-item">
-      <span class="sum-label">Total Rencana Reklamasi</span>
-      <span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span>
-    </div>
-    <div class="sum-item">
-      <span class="sum-label">Total Jaminan Ditempatkan</span>
-      <span class="sum-val" style="color:#15803d">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span>
-    </div>
-    <div class="sum-item">
-      <span class="sum-label">Belum Ditempatkan</span>
-      <span class="sum-val" style="color:${tr-tj>0?'#b91c1c':'#15803d'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span>
-    </div>
-    <div class="sum-item">
-      <span class="sum-label">Persentase Realisasi</span>
-      <span class="sum-val ${parseFloat(pct)>=100?'green':'amber'}">${pct}</span>
-    </div>
-  </div>
-
-  <div class="progress-wrap">
-    <div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div>
-    <div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div>
-  </div>
-
-  <div class="footer">
-    <span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span>
-    <span>Dicetak: ${new Date().toLocaleString('id-ID')}</span>
-  </div>
-  </body></html>`;
+  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #2563eb;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#2563eb,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${nama}</div><div class="co-sub">Laporan Reklamasi & Jaminan · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP OP'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${periodeHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
 
   const w = window.open('', '_blank', 'width=1100,height=800');
   w.document.write(html);
   w.document.close();
 }
-
 </script>
 </body>
 </html>
