@@ -6,7 +6,7 @@
 <title>Dashboard Reklamasi Tambang Aceh</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Roboto+Slab:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -15,11 +15,11 @@
   --bg:#f4f6f9;--bg-card:#ffffff;--bg-hov:#f8fafc;
   --bdr:#e5e7eb;--bdr-s:#d1d5db;
   --tx:#1f2937;--tx-m:#6b7280;--tx-d:#9ca3af;
-  --ac:#2563eb;--ac-s:rgba(37,99,235,.08);--ac-d:rgba(37,99,235,.25);
+  --ac:#0d9488;--ac-s:rgba(13,148,136,.08);--ac-d:rgba(13,148,136,.25);
   --gold:#d97706;--rose:#dc2626;--green:#059669;
-  --radius:10px;
-  --shadow:0 1px 3px rgba(0,0,0,.06);
-  --shadow-lg:0 4px 12px rgba(0,0,0,.08);
+  --radius:12px;
+  --shadow:0 1px 3px rgba(0,0,0,.05);
+  --shadow-lg:0 6px 18px rgba(0,0,0,.08);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-apple-system,sans-serif;font-size:13px;line-height:1.5;-webkit-font-smoothing:antialiased;min-height:100vh;}
@@ -35,8 +35,16 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .login-hero-badges{display:flex;gap:24px;margin-top:24px;flex-wrap:wrap;}
 .login-hero-badges .hb{display:flex;align-items:center;gap:8px;font-size:12.5px;color:rgba(255,255,255,.8);font-weight:500;}
 .login-hero-badges .hb-ico{width:32px;height:32px;border-radius:8px;background:rgba(255,255,255,.12);display:grid;place-items:center;font-size:15px;}
-.login-side{width:460px;flex:none;background:linear-gradient(180deg,#f0f5fa 0%,#e8eef7 50%,#dfe8f3 100%);display:flex;flex-direction:column;justify-content:center;padding:48px 40px;overflow-y:auto;}
-.login-side-inner{width:100%;max-width:380px;margin:0 auto;}
+.login-side{position:relative;width:460px;flex:none;background:linear-gradient(180deg,#f0f5fa 0%,#e8eef7 50%,#dfe8f3 100%);display:flex;flex-direction:column;justify-content:center;padding:48px 40px;overflow-y:auto;}
+.login-side-decor{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0;}
+.login-side-decor::before,.login-side-decor::after{content:'';position:absolute;border-radius:50%;filter:blur(50px);}
+.login-side-decor::before{width:280px;height:280px;background:radial-gradient(circle,rgba(13,148,136,.55),transparent 70%);top:-80px;right:-70px;animation:orbFloat1 13s ease-in-out infinite;}
+.login-side-decor::after{width:240px;height:240px;background:radial-gradient(circle,rgba(20,184,166,.45),transparent 70%);bottom:-70px;left:-60px;animation:orbFloat2 16s ease-in-out infinite;}
+.login-side-decor .orb3{position:absolute;width:150px;height:150px;border-radius:50%;filter:blur(40px);background:radial-gradient(circle,rgba(217,119,6,.28),transparent 70%);top:40%;left:60%;animation:orbFloat1 19s ease-in-out infinite reverse;}
+@keyframes orbFloat1{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(-20px,26px) scale(1.09);}}
+@keyframes orbFloat2{0%,100%{transform:translate(0,0) scale(1);}50%{transform:translate(22px,-20px) scale(1.11);}}
+.login-side-inner{position:relative;z-index:1;width:100%;max-width:380px;margin:0 auto;}
+@media(prefers-reduced-motion:reduce){.login-side-decor::before,.login-side-decor::after,.login-side-decor .orb3{animation:none;}}
 .login-logo{width:56px;height:56px;margin-bottom:20px;background:url('aceh-logo-nobg.png') center/contain no-repeat;filter:drop-shadow(0 2px 4px rgba(0,0,0,.1));}
 .login-header h1{font-size:22px;font-weight:700;color:var(--tx);margin-bottom:4px;line-height:1.3;}
 .login-header p{font-size:13px;color:var(--tx-m);font-weight:400;margin-bottom:28px;}
@@ -45,9 +53,9 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .role-options{display:flex;flex-direction:column;gap:10px;margin-bottom:20px;}
 .role-btn{display:flex;align-items:center;gap:14px;padding:14px 16px;border:1.5px solid var(--bdr);border-radius:10px;background:#fff;cursor:pointer;transition:all .15s;text-align:left;}
 .role-btn:hover{border-color:var(--ac-d);background:var(--ac-s);}
-.role-btn.selected{border-color:var(--ac);background:var(--ac-s);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.role-btn.selected{border-color:var(--ac);background:var(--ac-s);box-shadow:0 0 0 3px rgba(13,148,136,.1);}
 .role-icon{width:40px;height:40px;border-radius:10px;display:grid;place-items:center;flex:none;}
-.role-icon.admin{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;}
+.role-icon.admin{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;}
 .role-icon.viewer{background:linear-gradient(135deg,#6b7280,#4b5563);color:#fff;}
 .role-icon svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;}
 .role-info h3{font-size:14px;font-weight:600;color:var(--tx);}
@@ -56,9 +64,9 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .login-field.show{display:block;}
 .login-field label{display:block;font-size:11.5px;font-weight:500;color:var(--tx-m);text-transform:uppercase;letter-spacing:.04em;margin-bottom:6px;}
 .login-field input{width:100%;padding:11px 14px;border:1px solid var(--bdr);border-radius:8px;font-family:inherit;font-size:14px;color:var(--tx);background:var(--bg);transition:border-color .15s;}
-.login-field input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(37,99,235,.1);}
+.login-field input:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px rgba(13,148,136,.1);}
 .login-submit{width:100%;padding:12px;border:none;border-radius:8px;font-family:inherit;font-size:14px;font-weight:600;cursor:pointer;transition:all .15s;background:var(--ac);color:#fff;}
-.login-submit:hover{background:#1d4ed8;}
+.login-submit:hover{background:#0f766e;}
 .login-submit:disabled{opacity:.5;cursor:not-allowed;}
 .login-error{font-size:12px;color:var(--rose);margin-top:10px;display:none;}
 .login-footer{margin-top:32px;padding-top:20px;border-top:1px solid var(--bdr);font-size:11.5px;color:var(--tx-d);line-height:1.5;}
@@ -81,27 +89,28 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .app-shell{display:grid;grid-template-columns:200px minmax(0,1fr);min-height:100vh;}
 
 /* ==================== SIDEBAR ==================== */
-.sidebar{position:sticky;top:0;height:100vh;background:#111827;color:#fff;padding:20px 10px 16px;display:flex;flex-direction:column;overflow-y:auto;}
-.side-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;border-bottom:1px solid rgba(255,255,255,.08);}
-.crest{width:36px;height:42px;border-radius:6px;background:url('aceh-logo-nobg.png') center/contain no-repeat;flex:none;filter:brightness(1.1);}
-.side-title{font-weight:700;font-size:14px;line-height:1.15;letter-spacing:.01em;}
-.side-title span{display:block;font-weight:500;font-size:11px;opacity:.6;margin-top:1px;}
-.side-nav{display:flex;flex-direction:column;gap:2px;margin-top:14px;}
-.side-link{border:0;background:transparent;color:rgba(255,255,255,.55);border-radius:8px;padding:8px 10px;display:flex;align-items:center;gap:10px;text-align:left;font:500 12.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;transition:all .12s;}
-.side-link:hover{background:rgba(255,255,255,.06);color:rgba(255,255,255,.85);}
-.side-link.active{background:rgba(37,99,235,.2);color:#fff;}
-.side-ico{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:7px;background:rgba(255,255,255,.06);}
-.side-link.active .side-ico{background:rgba(37,99,235,.35);}
-.side-ico svg{width:15px;height:15px;fill:none;stroke:rgba(255,255,255,.5);stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round;}
-.side-link.active .side-ico svg,.side-link:hover .side-ico svg{stroke:rgba(255,255,255,.9);}
-.side-user{margin-top:auto;border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);border-radius:10px;padding:10px;display:flex;align-items:center;gap:9px;}
+.sidebar{position:sticky;top:0;height:100vh;background:#ffffff;color:var(--tx);padding:20px 12px 16px;display:flex;flex-direction:column;overflow-y:auto;border-right:1px solid var(--bdr);}
+.side-brand{display:flex;align-items:center;gap:10px;padding:0 8px 18px;border-bottom:1px solid var(--bdr);}
+.crest{width:36px;height:42px;border-radius:6px;background:url('aceh-logo-nobg.png') center/contain no-repeat;flex:none;}
+.side-title{font-weight:700;font-size:14px;line-height:1.15;letter-spacing:.01em;color:var(--tx);}
+.side-title span{display:block;font-weight:500;font-size:11px;color:var(--tx-m);margin-top:1px;}
+.side-nav{display:flex;flex-direction:column;gap:3px;margin-top:14px;}
+.side-link{border:0;background:transparent;color:var(--tx-m);border-radius:9px;padding:9px 10px;display:flex;align-items:center;gap:10px;text-align:left;font:500 12.5px/1.2 'Inter',system-ui,sans-serif;cursor:pointer;transition:all .12s;}
+.side-link:hover{background:var(--bg-hov);color:var(--tx);}
+.side-link.active{background:var(--ac-s);color:var(--ac);font-weight:600;}
+.side-ico{width:28px;height:28px;display:grid;place-items:center;flex:none;border-radius:8px;background:var(--bg);}
+.side-link.active .side-ico{background:var(--ac);}
+.side-ico svg{width:15px;height:15px;fill:none;stroke:var(--tx-m);stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;}
+.side-link:hover .side-ico svg{stroke:var(--tx);}
+.side-link.active .side-ico svg{stroke:#fff;}
+.side-user{margin-top:auto;border:1px solid var(--bdr);background:var(--bg);border-radius:12px;padding:10px;display:flex;align-items:center;gap:9px;}
 .avatar{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:11px;flex:none;}
-.avatar.admin-av{background:linear-gradient(135deg,#2563eb,#1d4ed8);color:#fff;}
+.avatar.admin-av{background:linear-gradient(135deg,#0d9488,#0f766e);color:#fff;}
 .avatar.viewer-av{background:linear-gradient(135deg,#6b7280,#4b5563);color:#fff;}
-.side-user strong{display:block;font-size:11.5px;line-height:1.15;font-weight:600;}
-.side-user span{display:block;font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;}
-.btn-logout{margin-top:8px;width:100%;padding:6px;border:1px solid rgba(255,255,255,.1);border-radius:7px;background:transparent;color:rgba(255,255,255,.45);font:500 10.5px 'Inter',sans-serif;cursor:pointer;transition:all .12s;}
-.btn-logout:hover{border-color:rgba(220,38,38,.4);color:rgba(220,38,38,.8);background:rgba(220,38,38,.06);}
+.side-user strong{display:block;font-size:11.5px;line-height:1.15;font-weight:600;color:var(--tx);}
+.side-user span{display:block;font-size:10px;color:var(--tx-m);margin-top:1px;}
+.btn-logout{margin-top:8px;width:100%;padding:7px;border:1px solid var(--bdr);border-radius:8px;background:transparent;color:var(--tx-m);font:500 10.5px 'Inter',sans-serif;cursor:pointer;transition:all .12s;}
+.btn-logout:hover{border-color:rgba(220,38,38,.4);color:var(--rose);background:rgba(220,38,38,.06);}
 
 /* ==================== MAIN ==================== */
 .main-panel{min-width:0;padding:20px 24px 40px;background:var(--bg);overflow-y:auto;}
@@ -122,23 +131,40 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .conn-status.err{color:var(--rose);}
 
 /* ==================== KPI ==================== */
-.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;}
-.kpi{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px 16px 12px;position:relative;overflow:hidden;transition:box-shadow .15s;box-shadow:var(--shadow);}
-.kpi:hover{box-shadow:var(--shadow-lg);}
-.kpi::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:var(--kc,var(--ac));}
-.kpi-label{font-size:10px;letter-spacing:.06em;text-transform:uppercase;color:var(--tx-m);margin-bottom:6px;font-family:'JetBrains Mono',monospace;font-weight:500;}
-.kpi-value{font-size:24px;font-weight:700;line-height:1;}
-.kpi-value .unit{font-size:10px;font-weight:500;color:var(--tx-m);margin-left:3px;}
-.kpi-detail{margin-top:10px;padding-top:8px;border-top:1px dashed var(--bdr);font-size:11.5px;color:var(--tx-m);display:flex;justify-content:space-between;}
-.kpi-detail strong{color:var(--tx);font-weight:500;}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:16px;}
+.kpi{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;padding:16px 18px;position:relative;overflow:hidden;transition:box-shadow .15s,transform .15s;box-shadow:var(--shadow);}
+.kpi:hover{box-shadow:var(--shadow-lg);transform:translateY(-1px);}
+.kpi-top{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;}
+.kpi-label{font-size:11.5px;color:var(--tx-m);font-weight:500;}
+.kpi-pill{font-size:10.5px;font-weight:600;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:20px;background:var(--kc,var(--ac));color:#fff;opacity:.92;white-space:nowrap;}
+.kpi-value{font-size:26px;font-weight:700;line-height:1;letter-spacing:-.01em;}
+.kpi-value .unit{font-size:11px;font-weight:500;color:var(--tx-m);margin-left:2px;}
+.kpi-cap{font-size:11px;color:var(--tx-d);margin-top:6px;margin-bottom:12px;}
+.kpi-bar{height:6px;border-radius:6px;background:var(--bg);overflow:hidden;}
+.kpi-bar-fill{display:block;height:100%;width:0;border-radius:6px;background:var(--kc,var(--ac));transition:width .5s ease;}
 
 /* ==================== CHARTS ==================== */
-.charts-grid{display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:14px;margin-bottom:24px;}
-.chart-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);padding:16px 18px;min-height:300px;display:flex;flex-direction:column;box-shadow:var(--shadow);}
-.chart-title{font-size:13.5px;font-weight:600;margin-bottom:1px;}
+.hero-grid{display:grid;grid-template-columns:1.75fr 1fr;gap:16px;margin-bottom:16px;}
+.charts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px;}
+.chart-card{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;padding:18px 20px;min-height:300px;display:flex;flex-direction:column;box-shadow:var(--shadow);}
+.chart-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px;}
+.hero-total{text-align:right;flex:none;}
+.hero-total-label{display:block;font-size:9px;letter-spacing:.04em;text-transform:uppercase;color:var(--tx-d);font-family:'JetBrains Mono',monospace;}
+.hero-total-val{display:block;font-size:20px;font-weight:700;color:var(--tx);line-height:1.1;margin-top:2px;}
+.chart-title{font-size:14px;font-weight:600;margin-bottom:1px;}
 .chart-sub{font-size:9px;color:var(--tx-d);letter-spacing:.04em;text-transform:uppercase;font-family:'JetBrains Mono',monospace;margin-bottom:10px;}
 .chart-body{flex:1;position:relative;min-height:220px;}
+@media(max-width:900px){.hero-grid{grid-template-columns:1fr;}}
 
+/* ==================== ATTENTION PANEL ==================== */
+.attn-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:24px;}
+.attn-card{min-height:auto;}
+.attn-list{margin-top:6px;max-height:260px;overflow-y:auto;display:flex;flex-direction:column;gap:5px;}
+.attn-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:7px 10px;border:1px solid var(--bdr);border-radius:7px;background:var(--bg);font-size:12px;}
+.attn-item .an{font-weight:500;color:var(--tx);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.attn-item .am{font-family:'JetBrains Mono',monospace;font-size:10.5px;white-space:nowrap;flex:none;}
+.attn-empty{padding:20px;text-align:center;color:var(--tx-d);font-size:12px;}
+@media(max-width:700px){.attn-grid{grid-template-columns:1fr;}}
 /* ==================== SECTION TITLE ==================== */
 .sec{font-size:15px;font-weight:700;margin-bottom:12px;display:flex;align-items:baseline;gap:8px;}
 .sec::after{content:'';flex:1;height:1px;background:var(--bdr);}
@@ -169,14 +195,14 @@ html,body{background:var(--bg);color:var(--tx);font-family:'Inter',system-ui,-ap
 .btn-ghost{background:var(--bg-card);color:var(--tx-m);}
 .btn-ghost:hover:not(:disabled){border-color:var(--bdr-s);color:var(--tx);}
 .btn-green{background:var(--ac);border-color:var(--ac);color:#fff;}
-.btn-green:hover:not(:disabled){background:#1d4ed8;border-color:#1d4ed8;}
+.btn-green:hover:not(:disabled){background:#0f766e;border-color:#0f766e;}
 .btn-upload{background:var(--bg-card);border:1.5px dashed var(--bdr-s);color:var(--tx-m);}
 .btn-upload:hover{border-color:var(--ac-d);color:var(--ac);background:var(--ac-s);}
 .btn-danger{background:transparent;border-color:var(--bdr);color:var(--rose);}
 .btn-danger:hover:not(:disabled){border-color:var(--rose);background:rgba(220,38,38,.06);}
 
 /* ==================== TABLE ==================== */
-.twrap{background:var(--bg-card);border:1px solid var(--bdr);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+.twrap{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;overflow:hidden;box-shadow:var(--shadow);}
 .tscroll{overflow-x:auto;max-height:680px;overflow-y:auto;}
 .tscroll::-webkit-scrollbar{width:7px;height:7px;}
 .tscroll::-webkit-scrollbar-track{background:var(--bg);}
@@ -198,11 +224,11 @@ tr.group-header:first-child td{border-top:none;}
 tr.group-header:hover td{background:#f0f4fa;}
 .group-chevron{display:inline-block;width:18px;height:18px;line-height:18px;text-align:center;font-size:11px;color:var(--tx-d);transition:transform .2s;margin-right:6px;vertical-align:middle;}
 tr.group-header.expanded .group-chevron{transform:rotate(90deg);}
-.group-name{font-family:'Roboto Slab',Georgia,serif;font-weight:700;font-size:14.5px;color:var(--tx);letter-spacing:.01em;vertical-align:middle;}
+.group-name{font-family:'Inter',system-ui,sans-serif;font-weight:600;font-size:14px;color:var(--tx);letter-spacing:-.01em;vertical-align:middle;}
 tr.child-row{display:none;}
 tr.child-row.show{display:table-row;}
 tr.child-row td:first-child{padding-left:24px;}
-tr.child-row td{font-family:'Roboto Slab',Georgia,serif;font-size:12.5px;line-height:1.6;}
+tr.child-row td{font-family:'Inter',system-ui,sans-serif;font-size:12.5px;line-height:1.55;}
 .pagi{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;font-size:12px;font-family:'JetBrains Mono',monospace;}
 .pagi button{padding:5px 12px;border:1px solid var(--bdr);border-radius:6px;background:#fff;font-family:inherit;font-size:11.5px;cursor:pointer;color:var(--tx);transition:all .12s;}
 .pagi button:hover:not(:disabled){border-color:var(--ac);color:var(--ac);background:var(--ac-s);}
@@ -214,7 +240,7 @@ tr.child-row td{font-family:'Roboto Slab',Georgia,serif;font-size:12.5px;line-he
 .nm-sub{display:block;font-size:11px;color:var(--tx-d);margin-top:2px;font-family:'JetBrains Mono',monospace;}
 .num{font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap;font-size:12.5px;}
 .chip{display:inline-block;padding:2px 8px;border-radius:5px;font-size:11px;font-weight:500;font-family:'JetBrains Mono',monospace;white-space:nowrap;}
-.c-op{background:rgba(37,99,235,.08);color:#1d4ed8;}
+.c-op{background:rgba(13,148,136,.08);color:#0f766e;}
 .c-eks{background:rgba(217,119,6,.08);color:#b45309;}
 .c-ada{background:rgba(5,150,105,.08);color:#047857;}
 .c-tdk{background:rgba(220,38,38,.08);color:#b91c1c;}
@@ -230,12 +256,38 @@ tr:hover .ract{opacity:1;}
 .ra:hover{background:var(--bg);color:var(--tx);}
 .ra.del:hover{background:rgba(220,38,38,.08);color:var(--rose);}
 tr.saving td{opacity:.5;}
+/* Compact (name-only) list + detail */
+.compact-row{cursor:pointer;}
+.compact-row td{padding:13px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.cr-name{font-weight:500;font-size:13.5px;color:var(--tx);}
+.compact-row .cr-go{color:var(--tx-d);font-size:18px;line-height:1;transition:transform .12s,color .12s;}
+.compact-row:hover{background:var(--ac-s);}
+.compact-row:hover .cr-name{color:var(--ac);}
+.compact-row:hover .cr-go{color:var(--ac);transform:translateX(3px);}
+.dt-list{display:flex;flex-direction:column;margin-top:6px;}
+.dt-row{display:flex;justify-content:space-between;align-items:baseline;gap:16px;padding:11px 2px;border-bottom:1px dashed var(--bdr);font-size:13px;}
+.dt-row:last-child{border-bottom:none;}
+.dt-l{color:var(--tx-m);font-size:10.5px;font-family:'JetBrains Mono',monospace;text-transform:uppercase;letter-spacing:.04em;flex:none;}
+.dt-v{color:var(--tx);text-align:right;font-weight:500;}
 
 /* ==================== MODAL ==================== */
 .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.3);backdrop-filter:blur(4px);z-index:100;display:none;place-items:center;}
-.modal-bg.open{display:grid;}
-.modal{background:var(--bg-card);border:1px solid var(--bdr);border-radius:12px;padding:24px;width:94%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 16px 48px rgba(0,0,0,.12);animation:slideUp .18s ease-out;}
-@keyframes slideUp{from{opacity:0;transform:translateY(8px);}to{opacity:1;transform:translateY(0);}}
+.modal-bg.open{display:grid;animation:bgIn .22s ease both;}
+@keyframes bgIn{from{opacity:0;}to{opacity:1;}}
+.modal{background:var(--bg-card);border:1px solid var(--bdr);border-radius:16px;padding:24px;width:94%;max-width:600px;max-height:90vh;overflow-y:auto;box-shadow:0 20px 56px rgba(0,0,0,.16);animation:modalPop .34s cubic-bezier(.34,1.56,.64,1) both;}
+@keyframes modalPop{0%{opacity:0;transform:translateY(14px) scale(.95);}100%{opacity:1;transform:translateY(0) scale(1);}}
+/* baris detail muncul bertahap */
+.dt-row{animation:dtIn .32s ease both;}
+.dt-row:nth-child(1){animation-delay:.06s;}
+.dt-row:nth-child(2){animation-delay:.10s;}
+.dt-row:nth-child(3){animation-delay:.14s;}
+.dt-row:nth-child(4){animation-delay:.18s;}
+.dt-row:nth-child(5){animation-delay:.22s;}
+.dt-row:nth-child(6){animation-delay:.26s;}
+.dt-row:nth-child(7){animation-delay:.30s;}
+.dt-row:nth-child(8){animation-delay:.34s;}
+@keyframes dtIn{from{opacity:0;transform:translateY(7px);}to{opacity:1;transform:translateY(0);}}
+@media(prefers-reduced-motion:reduce){.modal,.modal-bg.open,.dt-row{animation:none;}}
 .modal h2{font-size:16px;font-weight:700;margin-bottom:4px;}
 .modal .msub{font-size:11.5px;color:var(--tx-d);margin-bottom:16px;}
 .fgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
@@ -301,7 +353,7 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
 }
 @media(max-width:700px){
   .app-shell{display:flex;flex-direction:column;grid-template-columns:none;}
-  .sidebar{position:fixed!important;top:auto!important;bottom:0!important;left:0!important;right:0!important;height:auto!important;max-height:68px!important;padding:4px 6px 6px!important;z-index:50!important;border-top:1px solid rgba(255,255,255,.1)!important;border-right:none!important;overflow-x:auto!important;overflow-y:hidden!important;background:#111827!important;}
+  .sidebar{position:fixed!important;top:auto!important;bottom:0!important;left:0!important;right:0!important;height:auto!important;max-height:68px!important;padding:4px 6px 6px!important;z-index:50!important;border-top:1px solid var(--bdr)!important;border-right:none!important;overflow-x:auto!important;overflow-y:hidden!important;background:#ffffff!important;box-shadow:0 -2px 8px rgba(0,0,0,.04)!important;}
   .side-brand,.side-title,.side-user,.btn-logout,.side-footer{display:none!important;}
   .side-nav{display:flex;gap:2px;flex-direction:row;width:100%;}
   .side-link{flex:1;justify-content:center;padding:6px 4px;border-radius:8px;flex-direction:column;gap:2px;min-width:0;}
@@ -366,6 +418,7 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
   </div>
   <!-- RIGHT: Login form -->
   <div class="login-side">
+    <div class="login-side-decor"><div class="orb3"></div></div>
     <div class="login-side-inner">
       <div class="login-header">
         <div class="login-logo"></div>
@@ -474,15 +527,61 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
 <!-- ==================== DASHBOARD ==================== -->
 <section class="view-section active" id="dashboard-section">
 <div class="kpi-grid">
-  <div class="kpi fi" style="--kc:#2563eb"><div class="kpi-label">Total IUP</div><div class="kpi-value" id="k-total">—</div><div class="kpi-detail"><span>IUP OP <strong id="k-op">—</strong></span><span>Eksplorasi <strong id="k-eks">—</strong></span></div></div>
-  <div class="kpi fi" style="--kc:#d97706"><div class="kpi-label">Luas WIUP</div><div class="kpi-value"><span id="k-luas">—</span><span class="unit">Ha</span></div><div class="kpi-detail"><span>Rata-rata <strong id="k-avg">—</strong></span></div></div>
-  <div class="kpi fi" style="--kc:#059669"><div class="kpi-label">Jaminan OP</div><div class="kpi-value"><span id="k-jop">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-rop">—</strong></span></div></div>
-  <div class="kpi fi" style="--kc:#0284c7"><div class="kpi-label">Jaminan Eksplorasi</div><div class="kpi-value"><span id="k-jeks">—</span></div><div class="kpi-detail"><span>Terhadap rencana</span><span><strong id="k-deks">—</strong></span></div></div>
+  <div class="kpi fi" style="--kc:#0d9488">
+    <div class="kpi-top"><span class="kpi-label">Total IUP</span><span class="kpi-pill" id="k-total-pill">—</span></div>
+    <div class="kpi-value" id="k-total">—</div>
+    <div class="kpi-cap" id="k-total-cap">—</div>
+    <div class="kpi-bar"><span class="kpi-bar-fill" id="k-total-bar"></span></div>
+  </div>
+  <div class="kpi fi" style="--kc:#7c3aed">
+    <div class="kpi-top"><span class="kpi-label">Luas WIUP</span><span class="kpi-pill" id="k-luas-pill">—</span></div>
+    <div class="kpi-value"><span id="k-luas">—</span> <span class="unit">Ha</span></div>
+    <div class="kpi-cap" id="k-luas-cap">—</div>
+    <div class="kpi-bar"><span class="kpi-bar-fill" id="k-luas-bar"></span></div>
+  </div>
+  <div class="kpi fi" style="--kc:#059669">
+    <div class="kpi-top"><span class="kpi-label">Jaminan OP</span><span class="kpi-pill" id="k-jop-pill">—</span></div>
+    <div class="kpi-value" id="k-jop">—</div>
+    <div class="kpi-cap">realisasi terhadap rencana</div>
+    <div class="kpi-bar"><span class="kpi-bar-fill" id="k-jop-bar"></span></div>
+  </div>
+  <div class="kpi fi" style="--kc:#0284c7">
+    <div class="kpi-top"><span class="kpi-label">Jaminan Eksplorasi</span><span class="kpi-pill" id="k-jeks-pill">—</span></div>
+    <div class="kpi-value" id="k-jeks">—</div>
+    <div class="kpi-cap">realisasi terhadap rencana</div>
+    <div class="kpi-bar"><span class="kpi-bar-fill" id="k-jeks-bar"></span></div>
+  </div>
+</div>
+<div class="hero-grid">
+  <div class="chart-card hero-card">
+    <div class="chart-head">
+      <div><div class="chart-title">Realisasi Jaminan per Tahun</div><div class="chart-sub">Jaminan tertempatkan · OP vs Eksplorasi</div></div>
+      <div class="hero-total"><span class="hero-total-label">Total Jaminan</span><span class="hero-total-val" id="hero-jml">—</span></div>
+    </div>
+    <div class="chart-body" style="min-height:250px"><canvas id="c-tahun"></canvas></div>
+  </div>
+  <div class="chart-card">
+    <div class="chart-title">Komoditas</div><div class="chart-sub">Distribusi jenis tambang</div>
+    <div class="chart-body"><canvas id="c-kom"></canvas></div>
+  </div>
 </div>
 <div class="charts-grid">
   <div class="chart-card"><div class="chart-title">Sebaran IUP per Kabupaten</div><div class="chart-sub">Jumlah izin per lokasi</div><div class="chart-body"><canvas id="c-lok"></canvas></div></div>
-  <div class="chart-card"><div class="chart-title">Komoditas</div><div class="chart-sub">Distribusi jenis tambang</div><div class="chart-body"><canvas id="c-kom"></canvas></div></div>
   <div class="chart-card"><div class="chart-title">Status IUP</div><div class="chart-sub">OP vs Eksplorasi</div><div class="chart-body"><canvas id="c-st"></canvas></div></div>
+  <div class="chart-card"><div class="chart-title">Jaminan per Bank</div><div class="chart-sub">Total deposito jaminan per bank</div><div class="chart-body"><canvas id="c-bank"></canvas></div></div>
+</div>
+<div class="sec"><span>Perlu Perhatian</span> <span class="hint">— ringkasan pengawasan</span></div>
+<div class="attn-grid">
+  <div class="chart-card attn-card">
+    <div class="chart-title">IUP Akan / Telah Berakhir</div>
+    <div class="chart-sub">≤ 12 bulan ke depan atau sudah lewat</div>
+    <div class="attn-list" id="attn-expiry"></div>
+  </div>
+  <div class="chart-card attn-card">
+    <div class="chart-title">Belum Menempatkan Jaminan</div>
+    <div class="chart-sub">Perusahaan tanpa deposito jaminan tercatat</div>
+    <div class="attn-list" id="attn-nojaminan"></div>
+  </div>
 </div>
 </section>
 
@@ -509,6 +608,10 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
     <button class="btn btn-ghost" id="btn-export">
       <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
       Export
+    </button>
+    <button class="btn btn-ghost" id="btn-backup" title="Simpan seluruh data (semua tabel) ke satu file Excel">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-8H4v8"/><path d="M4 3h16v6H4z"/><line x1="12" y1="13" x2="12" y2="17"/></svg>
+      Backup Semua
     </button>
   </div>
 </div>
@@ -576,6 +679,20 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
   </div>
 </div>
 
+<!-- MODAL DETAIL IUP -->
+<div class="modal-bg" id="m-detail">
+  <div class="modal" style="max-width:460px;">
+    <h2 id="detail-title">Detail IUP</h2>
+    <div class="msub" id="detail-sub">—</div>
+    <div class="dt-list" id="detail-body"></div>
+    <div class="mact">
+      <button class="btn btn-ghost" id="detail-close">Tutup</button>
+      <button class="btn btn-danger admin-only" id="detail-del">Hapus</button>
+      <button class="btn btn-green admin-only" id="detail-edit">Edit</button>
+    </div>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
 <script>
@@ -586,6 +703,12 @@ const SUPA_URL = 'https://ngewzlkifctbmrquzrfj.supabase.co';
 const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5nZXd6bGtpZmN0Ym1ycXV6cmZqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNjgyMTcsImV4cCI6MjA5MTk0NDIxN30.oLlI_Y9-Seg6d6NEbyYmYrgFqiGoPP8Ri1KznzvBe_I';
 const { createClient } = supabase;
 const sb = createClient(SUPA_URL, SUPA_KEY);
+
+// KEAMANAN: setelah menyiapkan RLS + user admin di Supabase (lihat SETUP_KEAMANAN.md),
+// ubah nilai ini menjadi true. Saat true, login admin memakai Supabase Auth asli
+// sehingga hak tulis benar-benar dilindungi RLS di sisi server — bukan sekadar
+// menyembunyikan tombol. false = perilaku lama (belum aman).
+const USE_SUPABASE_AUTH = false;
 
 // Safe sessionStorage wrapper (disabled on data: URLs etc)
 const _ss = {
@@ -630,17 +753,27 @@ async function doLogin() {
     btn.disabled = true;
     btn.textContent = 'Memverifikasi…';
     try {
-      const { data, error } = await sb.rpc('verify_login', { p_username: username, p_password: pw });
-      if (error) throw error;
-      if (!data.success) {
-        err.textContent = data.message || 'Username atau password salah.';
-        err.style.display = 'block';
-        return;
+      if (USE_SUPABASE_AUTH) {
+        // Login admin via Supabase Auth (kolom username diisi EMAIL admin)
+        const { data, error } = await sb.auth.signInWithPassword({ email: username, password: pw });
+        if (error) throw error;
+        USER_ROLE = 'admin';
+        USER_DISPLAY = (data.user && (data.user.user_metadata?.display_name || data.user.email)) || username;
+        _ss.set('rek_role', 'admin');
+        _ss.set('rek_display', USER_DISPLAY);
+      } else {
+        const { data, error } = await sb.rpc('verify_login', { p_username: username, p_password: pw });
+        if (error) throw error;
+        if (!data.success) {
+          err.textContent = data.message || 'Username atau password salah.';
+          err.style.display = 'block';
+          return;
+        }
+        USER_ROLE = data.role;
+        USER_DISPLAY = data.display_name || username;
+        _ss.set('rek_role', data.role);
+        _ss.set('rek_display', USER_DISPLAY);
       }
-      USER_ROLE = data.role;
-      USER_DISPLAY = data.display_name || username;
-      _ss.set('rek_role', data.role);
-      _ss.set('rek_display', USER_DISPLAY);
     } catch (e) {
       err.textContent = 'Gagal terhubung: ' + (e.message || e);
       err.style.display = 'block';
@@ -662,6 +795,7 @@ async function doLogin() {
 }
 
 function doLogout() {
+  if (USE_SUPABASE_AUTH) { try { sb.auth.signOut(); } catch(e) {} }
   _ss.del('rek_role');
   _ss.del('rek_display');
   USER_ROLE = null;
@@ -701,6 +835,8 @@ const DRIVE = {}; // pemegang_iup → drive_url
 // ============================================================
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
+// Escape untuk mencegah XSS saat data dirender via innerHTML
+const esc = s => String(s==null?'':s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const fmt = {
   num: v => (v==null||v==='') ? '—' : new Intl.NumberFormat('id-ID').format(v),
   rpS: v => {
@@ -817,20 +953,33 @@ async function upsertMany(tab, rows) {
 
 async function truncateAndInsert(tab, rows) {
   const tbl = getTable(tab);
-  if(tbl==='iup'){
-    const q = tab==='iup_all'
-      ? sb.from(tbl).delete().neq('id',0)
-      : sb.from(tbl).delete().eq('status_iup',tab==='iup_op'?'IUP OP':'IUP Ekspl.');
-    const {error:e}=await q;
-    if(e) throw e;
-  } else {
-    const {error:e}=await sb.from(tbl).delete().neq('id',0);
-    if(e) throw e;
-  }
+  const isIupScoped = tbl==='iup' && tab!=='iup_all';
+  const scopeVal = tab==='iup_op'?'IUP OP':'IUP Ekspl.';
+
+  // 1) Ambil salinan data lama dulu (untuk restore bila insert gagal)
+  const backupQ = isIupScoped
+    ? sb.from(tbl).select('*').eq('status_iup',scopeVal)
+    : sb.from(tbl).select('*');
+  const { data: backup, error: bErr } = await backupQ;
+  if (bErr) throw bErr;
+
+  // 2) Hapus data lama
+  const delQ = isIupScoped
+    ? sb.from(tbl).delete().eq('status_iup',scopeVal)
+    : sb.from(tbl).delete().neq('id',0);
+  const { error: dErr } = await delQ;
+  if (dErr) throw dErr;
+
+  // 3) Masukkan data baru; jika gagal, pulihkan data lama
   if (rows.length > 0) {
     const clean = rows.map(r => { const o={...r}; delete o.id; delete o.created_at; delete o.updated_at; return o; });
     const { error } = await sb.from(tbl).insert(clean);
-    if (error) throw error;
+    if (error) {
+      if (backup && backup.length) {
+        try { await sb.from(tbl).insert(backup); } catch(_) {}
+      }
+      throw new Error('Gagal memasukkan data baru — data lama telah dipulihkan. ' + (error.message||''));
+    }
   }
 }
 
@@ -856,34 +1005,34 @@ function getData(tab) {
 // TAB CONFIGS
 // ============================================================
 const TABS = {
-  iup_all:{label:'Data IUP',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
+  iup_all:{label:'Data IUP',compact:true,fields:[
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${esc(v||'—')}<span class="nm-sub">${esc(r.nomor_sk||'')}</span></span>`},
     {k:'status_iup',l:'Status',type:'select',opts:['IUP OP','IUP Ekspl.'],w:'100px',sort:1,render:v=>{const s=String(v||'');if(s==='IUP OP')return'<span class="chip c-op">IUP OP</span>';if(s==='IUP Ekspl.')return'<span class="chip c-eks">Eksplorasi</span>';return'<span class="chip c-neu">—</span>';}},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
     {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
     {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
   ],filters:['status_iup','komoditas','lokasi'],searchKeys:['nama','nomor_sk','status_iup','komoditas','lokasi'],
   summary:rows=>{const l=rows.reduce((s,x)=>s+(x.luas_ha||0),0);return`Luas: <strong>${fmt.num(Math.round(l))} Ha</strong>`;}},
 
-  iup_op:{label:'IUP OP',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+  iup_op:{label:'IUP OP',compact:true,fields:[
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${esc(v||'—')}<span class="nm-sub">${esc(r.nomor_sk||'')}</span></span>`},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
     {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
     {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
   ],filters:['komoditas','lokasi'],searchKeys:['nama','nomor_sk','komoditas','lokasi'],
   summary:rows=>{const l=rows.reduce((s,x)=>s+(x.luas_ha||0),0);return`Luas: <strong>${fmt.num(Math.round(l))} Ha</strong>`;}},
 
-  iup_eks:{label:'IUP Eksplorasi',fields:[
-    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${v||'—'}<span class="nm-sub">${r.nomor_sk||''}</span></span>`},
-    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1},
+  iup_eks:{label:'IUP Eksplorasi',compact:true,fields:[
+    {k:'nama',l:'Pemegang IUP',type:'text',w:'220px',sort:1,render:(v,r)=>`<span class="nm">${esc(v||'—')}<span class="nm-sub">${esc(r.nomor_sk||'')}</span></span>`},
+    {k:'komoditas',l:'Komoditas',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'luas_ha',l:'Luas (Ha)',type:'number',w:'90px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1},
+    {k:'lokasi',l:'Kabupaten',type:'text',w:'120px',sort:1,render:v=>esc(v??'—')},
     {k:'nomor_sk',l:'Nomor SK IUP',type:'text',w:'0',sort:0,formOnly:1},
     {k:'tgl_mulai',l:'Mulai',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
     {k:'tgl_berakhir',l:'Berakhir',type:'date',w:'100px',sort:1,cls:'date-c',render:v=>fmt.date(v)},
@@ -900,7 +1049,7 @@ const TABS = {
     {k:'no_deposito',l:'No Deposito',type:'text',w:'110px',sort:1},
     {k:'nama_bank',l:'Bank',type:'text',w:'100px',sort:1},
     {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${v}</span>`:''},
+    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${esc(v)}</span>`:''},
   ],filters:['dokumen','nama_bank'],searchKeys:['pemegang_iup','no_deposito','nama_bank','tahun_jaminan','keterangan'],
   summary:rows=>{
     const j=rows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
@@ -919,7 +1068,7 @@ const TABS = {
     {k:'no_deposito',l:'No Deposito',type:'text',w:'110px',sort:1},
     {k:'nama_bank',l:'Bank',type:'text',w:'100px',sort:1},
     {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'130px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
-    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${v}</span>`:''},
+    {k:'keterangan',l:'Keterangan',type:'text',w:'150px',sort:1,render:v=>v?`<span style="font-size:11px;color:var(--tx-m)">${esc(v)}</span>`:''},
   ],filters:['dokumen','nama_bank'],searchKeys:['pemegang_iup','no_deposito','nama_bank','tahun','tahun_jaminan','keterangan'],
   summary:rows=>{
     const j=rows.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
@@ -948,20 +1097,42 @@ function updateKPIs() {
   const iup=DB.iup, rop=DB.reklamasi_op, reks=DB.reklamasi_eks;
   const total=iup.length, op=iup.filter(x=>x.status_iup==='IUP OP').length;
   const luas=iup.reduce((s,x)=>s+(x.luas_ha||0),0);
+  const luasOp=iup.filter(x=>x.status_iup==='IUP OP').reduce((s,x)=>s+(x.luas_ha||0),0);
   const jop=rop.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
   const rp=sumRencanaDedup(rop);
   const jeks=reks.reduce((s,x)=>s+(x.no_deposito&&x.jumlah_jaminan?x.jumlah_jaminan:0),0);
   const reks_r=reks.reduce((s,x)=>s+(x.jumlah_rencana||0),0);
-  $('#k-total').textContent=total;
-  $('#k-op').textContent=op;
-  $('#k-eks').textContent=total-op;
-  $('#k-luas').textContent=new Intl.NumberFormat('id-ID').format(Math.round(luas));
-  $('#k-avg').textContent=total>0?new Intl.NumberFormat('id-ID').format(Math.round(luas/total))+' Ha':'—';
+  const nf=new Intl.NumberFormat('id-ID');
+  const pct1=(a,b)=>b>0?(a/b*100).toFixed(1).replace('.',','):null;
+  const setBar=(id,p)=>{const el=$(id);if(el)el.style.width=Math.max(0,Math.min(100,p||0))+'%';};
+
+  // Total IUP — porsi OP
+  const opShare=total>0?op/total*100:0;
+  $('#k-total').textContent=nf.format(total);
+  $('#k-total-pill').textContent=total>0?Math.round(opShare)+'% OP':'—';
+  $('#k-total-cap').textContent=`IUP OP ${op} · Eksplorasi ${total-op}`;
+  setBar('#k-total-bar',opShare);
+
+  // Luas WIUP — porsi luas OP
+  const luasShare=luas>0?luasOp/luas*100:0;
+  $('#k-luas').textContent=nf.format(Math.round(luas));
+  $('#k-luas-pill').textContent=luas>0?Math.round(luasShare)+'% OP':'—';
+  $('#k-luas-cap').textContent=total>0?`Rata-rata ${nf.format(Math.round(luas/total))} Ha / IUP`:'—';
+  setBar('#k-luas-bar',luasShare);
+
+  // Jaminan OP — realisasi terhadap rencana
+  const pOp=rp>0?jop/rp*100:0;
   $('#k-jop').innerHTML=fmt.rpS(jop);
-  $('#k-rop').textContent=rp>0?(jop/rp*100).toFixed(1).replace('.',',')+' %':'—';
+  $('#k-jop-pill').textContent=pct1(jop,rp)?pct1(jop,rp)+'%':'—';
+  setBar('#k-jop-bar',pOp);
+
+  // Jaminan Eksplorasi — realisasi terhadap rencana
+  const pEks=reks_r>0?jeks/reks_r*100:0;
   $('#k-jeks').innerHTML=fmt.rpS(jeks);
-  $('#k-deks').textContent=reks_r>0?(jeks/reks_r*100).toFixed(1).replace('.',',')+' %':'—';
-  $('#tc-op').textContent=iup.filter(x=>x.status_iup==='IUP OP').length;
+  $('#k-jeks-pill').textContent=pct1(jeks,reks_r)?pct1(jeks,reks_r)+'%':'—';
+  setBar('#k-jeks-bar',pEks);
+
+  $('#tc-op').textContent=op;
   $('#tc-eks').textContent=iup.filter(x=>x.status_iup==='IUP Ekspl.').length;
   $('#tc-rop').textContent=rop.length;
   $('#tc-reks').textContent=reks.length;
@@ -972,13 +1143,84 @@ function buildCharts(){
   charts.forEach(c=>c.destroy()); charts=[];
   const countBy=(arr,k)=>{const m=new Map();arr.forEach(x=>{const v=x[k]||'(kosong)';m.set(v,(m.get(v)||0)+1);});return[...m.entries()].sort((a,b)=>b[1]-a[1]);};
   const co={responsive:true,maintainAspectRatio:false,plugins:{legend:{labels:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:10.5,weight:'500'},boxWidth:8,boxHeight:8,padding:8}},tooltip:{backgroundColor:'#fff',borderColor:'#e5e7eb',borderWidth:1,titleColor:'#1f2937',bodyColor:'#1f2937',padding:8,titleFont:{family:"'Inter',sans-serif",size:12,weight:'600'},bodyFont:{family:"'JetBrains Mono',monospace",size:11}}}};
-  const pal=['#2563eb','#d97706','#059669','#7c3aed','#dc2626','#0284c7','#65a30d','#c2410c','#9333ea','#0f766e'];
+  const pal=['#0d9488','#d97706','#059669','#7c3aed','#dc2626','#0284c7','#65a30d','#c2410c','#9333ea','#0f766e'];
+
+  // ---- HERO: Realisasi Jaminan per Tahun (area gradien, OP vs Eksplorasi) ----
+  const yearMap=(rows)=>{const m=new Map();rows.forEach(r=>{if(r.no_deposito&&r.jumlah_jaminan){const y=String(r.tahun_jaminan||'').match(/\d{4}/);if(y)m.set(y[0],(m.get(y[0])||0)+r.jumlah_jaminan);}});return m;};
+  const mOp=yearMap(DB.reklamasi_op), mEks=yearMap(DB.reklamasi_eks);
+  const years=[...new Set([...mOp.keys(),...mEks.keys()])].sort();
+  const totalJ=[...mOp.values(),...mEks.values()].reduce((s,v)=>s+v,0);
+  const hj=$('#hero-jml'); if(hj) hj.textContent=fmt.rpS(totalJ);
+  const grad=(color)=>(ctx)=>{const c=ctx.chart,a=c.chartArea;if(!a)return color+'22';const g=c.ctx.createLinearGradient(0,a.top,0,a.bottom);g.addColorStop(0,color+'59');g.addColorStop(1,color+'00');return g;};
+  const cT=$('#c-tahun');
+  if(cT){
+    if(years.length){
+      charts.push(new Chart(cT,{type:'line',data:{labels:years,datasets:[
+        {label:'Jaminan OP',data:years.map(y=>mOp.get(y)||0),borderColor:'#0d9488',backgroundColor:grad('#0d9488'),fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:4},
+        {label:'Jaminan Eksplorasi',data:years.map(y=>mEks.get(y)||0),borderColor:'#d97706',backgroundColor:grad('#d97706'),fill:true,tension:.4,borderWidth:2,pointRadius:0,pointHoverRadius:4},
+      ]},options:{...co,interaction:{mode:'index',intersect:false},plugins:{...co.plugins,legend:{...co.plugins.legend,position:'top',align:'end'},tooltip:{...co.plugins.tooltip,callbacks:{label:c=>c.dataset.label+': '+fmt.rpS(c.parsed.y)}}},scales:{x:{grid:{display:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9.5}}},y:{grid:{color:'#f3f4f6',drawBorder:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9.5},callback:v=>fmt.rpS(v)}}}}}));
+    } else {
+      cT.parentElement.innerHTML='<div class="attn-empty">Belum ada data jaminan bertahun untuk ditampilkan</div>';
+    }
+  }
+
   const lok=countBy(DB.iup,'lokasi');
-  charts.push(new Chart($('#c-lok'),{type:'bar',data:{labels:lok.map(x=>x[0]),datasets:[{label:'IUP',data:lok.map(x=>x[1]),backgroundColor:'#2563eb',borderRadius:3,borderSkipped:false}]},options:{...co,indexAxis:'y',plugins:{...co.plugins,legend:{display:false}},scales:{x:{grid:{color:'#f3f4f6',drawBorder:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9.5}}},y:{grid:{display:false},ticks:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:10.5,weight:'500'}}}}}}));
+  charts.push(new Chart($('#c-lok'),{type:'bar',data:{labels:lok.map(x=>x[0]),datasets:[{label:'IUP',data:lok.map(x=>x[1]),backgroundColor:'#0d9488',borderRadius:3,borderSkipped:false}]},options:{...co,indexAxis:'y',plugins:{...co.plugins,legend:{display:false}},scales:{x:{grid:{color:'#f3f4f6',drawBorder:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9.5}}},y:{grid:{display:false},ticks:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:10.5,weight:'500'}}}}}}));
   const kom=countBy(DB.iup,'komoditas');
   charts.push(new Chart($('#c-kom'),{type:'doughnut',data:{labels:kom.map(x=>x[0]),datasets:[{data:kom.map(x=>x[1]),backgroundColor:kom.map((_,i)=>pal[i%pal.length]),borderColor:'#fff',borderWidth:1.5,hoverOffset:2}]},options:{...co,cutout:'62%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'right',labels:{...co.plugins.legend.labels,padding:6}}}}}));
   const st=countBy(DB.iup,'status_iup');
-  charts.push(new Chart($('#c-st'),{type:'doughnut',data:{labels:st.map(x=>x[0]),datasets:[{data:st.map(x=>x[1]),backgroundColor:['#2563eb','#d97706'],borderColor:'#fff',borderWidth:1.5,hoverOffset:2}]},options:{...co,cutout:'68%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'bottom'}}}}));
+  charts.push(new Chart($('#c-st'),{type:'doughnut',data:{labels:st.map(x=>x[0]),datasets:[{data:st.map(x=>x[1]),backgroundColor:['#0d9488','#d97706'],borderColor:'#fff',borderWidth:1.5,hoverOffset:2}]},options:{...co,cutout:'68%',plugins:{...co.plugins,legend:{...co.plugins.legend,position:'bottom'}}}}));
+
+  // ---- Jaminan per Bank (bar) ----
+  const bankMap=new Map();
+  [...DB.reklamasi_op,...DB.reklamasi_eks].forEach(r=>{if(r.no_deposito&&r.jumlah_jaminan){const b=r.nama_bank||'(tanpa bank)';bankMap.set(b,(bankMap.get(b)||0)+r.jumlah_jaminan);}});
+  const bank=[...bankMap.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const cB=$('#c-bank');
+  if(cB){
+    if(bank.length){
+      charts.push(new Chart(cB,{type:'bar',data:{labels:bank.map(x=>x[0]),datasets:[{label:'Jaminan',data:bank.map(x=>x[1]),backgroundColor:'#059669',borderRadius:4,borderSkipped:false}]},options:{...co,plugins:{...co.plugins,legend:{display:false},tooltip:{...co.plugins.tooltip,callbacks:{label:c=>fmt.rpS(c.parsed.y)}}},scales:{x:{grid:{display:false},ticks:{color:'#6b7280',font:{family:"'Inter',sans-serif",size:9.5,weight:'500'}}},y:{grid:{color:'#f3f4f6',drawBorder:false},ticks:{color:'#9ca3af',font:{family:"'JetBrains Mono',monospace",size:9},callback:v=>fmt.rpS(v)}}}}}));
+    } else {
+      cB.parentElement.innerHTML='<div class="attn-empty">Belum ada jaminan tertempatkan</div>';
+    }
+  }
+}
+
+// ============================================================
+// ATTENTION PANEL (dashboard)
+// ============================================================
+function buildAttention(){
+  // 1) IUP akan / telah berakhir
+  const exp = [];
+  DB.iup.forEach(r => {
+    const st = getExpiryStatus(r.tgl_berakhir);
+    if (st) exp.push({ nama: r.nama, lokasi: r.lokasi, st, t: new Date(r.tgl_berakhir).getTime() });
+  });
+  exp.sort((a,b)=>a.t-b.t); // yang paling lampau/dekat di atas
+  const expEl = $('#attn-expiry');
+  if (expEl) {
+    expEl.innerHTML = exp.length
+      ? exp.map(e=>`<div class="attn-item"><span class="an">${esc(e.nama||'—')}${e.lokasi?` · ${esc(e.lokasi)}`:''}</span><span class="am"><span class="exp-badge ${e.st.cls}">${e.st.label}</span></span></div>`).join('')
+      : `<div class="attn-empty">Tidak ada IUP yang mendekati berakhir 👍</div>`;
+  }
+
+  // 2) Perusahaan belum menempatkan jaminan (per tabel OP & EKS)
+  const belum = [];
+  [['reklamasi_op','OP'],['reklamasi_eks','EKS']].forEach(([tbl,tag])=>{
+    const byCo = new Map();
+    DB[tbl].forEach(r=>{
+      const k = r.pemegang_iup || '(tidak ada)';
+      const j = (r.no_deposito && r.jumlah_jaminan) ? r.jumlah_jaminan : 0;
+      byCo.set(k, (byCo.get(k)||0) + j);
+    });
+    byCo.forEach((total,nama)=>{ if(total===0) belum.push({nama, tag}); });
+  });
+  belum.sort((a,b)=>String(a.nama).localeCompare(String(b.nama),'id'));
+  const njEl = $('#attn-nojaminan');
+  if (njEl) {
+    njEl.innerHTML = belum.length
+      ? belum.map(b=>`<div class="attn-item"><span class="an">${esc(b.nama)}</span><span class="am"><span class="chip c-tdk">${b.tag} · belum</span></span></div>`).join('')
+      : `<div class="attn-empty">Semua perusahaan sudah menempatkan jaminan 👍</div>`;
+  }
 }
 
 // ============================================================
@@ -991,12 +1233,12 @@ function buildFilters(){
   c.innerHTML=`<div class="sbox"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.35-4.35"/></svg><input type="text" id="si" placeholder="Cari..." value="${S.search.replace(/"/g,'&quot;')}"></div>`;
   if(cfg.grouped){
     const names=uniq(data,'pemegang_iup'), cur=S.filters['pemegang_iup']||'';
-    c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="pemegang_iup"><option value="">Semua Perusahaan</option>${names.map(v=>`<option value="${String(v).replace(/"/g,'&quot;')}"${cur===v?' selected':''}>${v}</option>`).join('')}</select>`);
+    c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="pemegang_iup"><option value="">Semua Perusahaan</option>${names.map(v=>`<option value="${esc(v)}"${cur===v?' selected':''}>${esc(v)}</option>`).join('')}</select>`);
   }
   cfg.filters.forEach(fk=>{
     const vals=uniq(data,fk), cur=S.filters[fk]||'';
     const lbl=({status_iup:'Status',komoditas:'Komoditas',lokasi:'Kabupaten',dokumen:'Dokumen',nama_bank:'Bank'})[fk]||fk;
-    c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="${fk}"><option value="">Semua ${lbl}</option>${vals.map(v=>`<option value="${String(v).replace(/"/g,'&quot;')}"${cur===String(v)?' selected':''}>${v}</option>`).join('')}</select>`);
+    c.insertAdjacentHTML('beforeend',`<select class="fsel" data-f="${fk}"><option value="">Semua ${lbl}</option>${vals.map(v=>`<option value="${esc(v)}"${cur===String(v)?' selected':''}>${esc(v)}</option>`).join('')}</select>`);
   });
   c.insertAdjacentHTML('beforeend',`<button class="btn btn-ghost" id="reset-btn" style="font-size:10.5px;">Reset</button>`);
   $('#si').addEventListener('input',e=>{S.search=e.target.value.toLowerCase();S.page=1;renderTable();});
@@ -1048,16 +1290,19 @@ function applySort(rows){
 function renderTable(){
   const cfg=TABS[S.tab], allRows=getData(S.tab);
   const filtered=applyFilter(allRows), sorted=applySort(filtered);
-  const cols=cfg.fields.filter(f=>!f.hidden&&!f.formOnly);
+  const compact = !!cfg.compact && !cfg.grouped;
+  const allCols=cfg.fields.filter(f=>!f.hidden&&!f.formOnly);
+  const cols = compact ? allCols.filter(f=>f.k==='nama') : allCols;
   const tbl=$('#tbl');
   const showActions = isAdmin();
-  const head=`<thead><tr>${cols.map(c=>{const sc=S.sort.col===c.k?(S.sort.dir==='asc'?'asc':'dsc'):(c.sort?'sa':'');return`<th class="${sc}" data-col="${c.k}" style="width:${c.w||'auto'}">${c.l}</th>`;}).join('')}${showActions?'<th style="width:48px"></th>':''}</tr></thead>`;
+  const showActionsCol = showActions && !compact;
+  const head=`<thead><tr>${cols.map(c=>{const sc=S.sort.col===c.k?(S.sort.dir==='asc'?'asc':'dsc'):(c.sort?'sa':'');return`<th class="${sc}" data-col="${c.k}" style="width:${c.w||'auto'}">${compact?'Pemegang IUP':c.l}</th>`;}).join('')}${showActionsCol?'<th style="width:48px"></th>':''}</tr></thead>`;
   let body='';
   let pageRows = sorted;
   const totalPages = cfg.grouped ? 0 : Math.ceil(sorted.length / PAGE_SIZE);
 
   if(!sorted.length){
-    body=`<tbody><tr><td colspan="${cols.length+(showActions?1:0)}"><div class="empty"><div class="big">Tidak ada data</div><div>Ubah filter atau tambah data baru</div></div></td></tr></tbody>`;
+    body=`<tbody><tr><td colspan="${cols.length+(showActionsCol?1:0)}"><div class="empty"><div class="big">Tidak ada data</div><div>Ubah filter atau tambah data baru</div></div></td></tr></tbody>`;
   } else if(cfg.grouped){
     body=buildGroupedBody(sorted,cols,showActions);
   } else {
@@ -1066,7 +1311,11 @@ function renderTable(){
       const start = (S.page - 1) * PAGE_SIZE;
       pageRows = sorted.slice(start, start + PAGE_SIZE);
     }
-    body=`<tbody>${pageRows.map(row=>`<tr data-id="${row.id}">${cols.map(c=>{const raw=row[c.k];const val=c.render?c.render(raw,row):(raw??'—');return`<td class="${c.cls||''}">${val}</td>`;}).join('')}${showActions?`<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td>`:''}</tr>`).join('')}</tbody>`;
+    if(compact){
+      body=`<tbody>${pageRows.map(row=>`<tr class="compact-row" data-id="${row.id}"><td><span class="cr-name">${esc(row.nama||'—')}</span><span class="cr-go">›</span></td></tr>`).join('')}</tbody>`;
+    } else {
+      body=`<tbody>${pageRows.map(row=>`<tr data-id="${row.id}">${cols.map(c=>{const raw=row[c.k];const val=c.render?c.render(raw,row):esc(raw??'—');return`<td class="${c.cls||''}">${val}</td>`;}).join('')}${showActionsCol?`<td><div class="ract"><button class="ra edit" data-id="${row.id}">✏️</button><button class="ra del" data-id="${row.id}">🗑</button></div></td>`:''}</tr>`).join('')}</tbody>`;
+    }
   }
   tbl.innerHTML=head+body;
 
@@ -1094,7 +1343,10 @@ function renderTable(){
     const f=cols.find(c=>c.k===th.dataset.col);if(!f||!f.sort)return;
     th.addEventListener('click',()=>{const col=th.dataset.col;if(S.sort.col===col)S.sort.dir=S.sort.dir==='asc'?'desc':'asc';else{S.sort.col=col;S.sort.dir='asc';}S.page=1;renderTable();});
   });
-  if(showActions){
+  if(compact){
+    tbl.querySelectorAll('tr.compact-row').forEach(tr=>tr.addEventListener('click',()=>openDetail(parseInt(tr.dataset.id))));
+  }
+  if(showActionsCol){
     tbl.querySelectorAll('.ra.edit').forEach(b=>b.addEventListener('click',e=>openEdit(parseInt(e.currentTarget.dataset.id))));
     tbl.querySelectorAll('.ra.del').forEach(b=>b.addEventListener('click',e=>openDel(parseInt(e.currentTarget.dataset.id))));
   }
@@ -1105,9 +1357,8 @@ function renderTable(){
   // Show/hide group toolbar
   $('#grp-toolbar').style.display=cfg.grouped?'flex':'none';
 
-  // Apply expiry warnings
-  if(cfg.grouped) applyGroupedExpiryWarnings();
-  else applyExpiryWarnings();
+  // Peringatan sisa masa berlaku hanya ditampilkan di Dashboard, bukan di tabel data
+  const _w=$('#grp-warn-count'); if(_w) _w.textContent='';
 }
 
 function buildGroupedBody(rows,cols,showActions){
@@ -1125,7 +1376,7 @@ function buildGroupedBody(rows,cols,showActions){
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:6px;">
         <div>
           <span class="group-chevron">▶</span>
-          <span class="group-name">${nama}</span>
+          <span class="group-name">${esc(nama)}</span>
           <span style="margin-left:8px;font-size:10px;color:var(--tx-d);font-family:'JetBrains Mono',monospace;">${grows.length} baris</span>
         </div>
         <div style="display:flex;gap:10px;align-items:center;font-size:10.5px;font-family:'JetBrains Mono',monospace;" onclick="event.stopPropagation()">
@@ -1162,12 +1413,12 @@ function buildGroupedBody(rows,cols,showActions){
       cols.forEach(c=>{
         if(c.k==='pemegang_iup'){
           const periodeVal = S.tab==='rek_eks' ? (row.tahun||'—') : (row.periode_ke!=null&&String(row.periode_ke).trim()!=='' ? row.periode_ke : '—');
-          html+=`<td style="padding-left:24px;"><span class="year-tag">${periodeVal}</span></td>`;
+          html+=`<td style="padding-left:24px;"><span class="year-tag">${esc(periodeVal)}</span></td>`;
         } else if(c.k==='tahun_jaminan'){
-          html+=`<td><span class="year-tag">${row.tahun_jaminan||'—'}</span></td>`;
+          html+=`<td><span class="year-tag">${esc(row.tahun_jaminan||'—')}</span></td>`;
         } else {
           const raw=row[c.k];
-          const val=c.render?c.render(raw,row):(raw??'—');
+          const val=c.render?c.render(raw,row):esc(raw??'—');
           html+=`<td class="${c.cls||''}">${val}</td>`;
         }
       });
@@ -1490,6 +1741,38 @@ $('#d-confirm').addEventListener('click',async()=>{
 });
 
 // ============================================================
+// DETAIL IUP (pop-up dari daftar ringkas)
+// ============================================================
+let detailId=null;
+function openDetail(id){
+  const row=DB.iup.find(r=>r.id===id);
+  if(!row) return;
+  detailId=id;
+  const statusChip = row.status_iup==='IUP OP'?'<span class="chip c-op">IUP OP</span>'
+    : row.status_iup==='IUP Ekspl.'?'<span class="chip c-eks">Eksplorasi</span>'
+    : '<span class="chip c-neu">—</span>';
+  const exp=getExpiryStatus(row.tgl_berakhir);
+  const berakhir=fmt.date(row.tgl_berakhir)+(exp?` <span class="exp-badge ${exp.cls}">${exp.label}</span>`:'');
+  const def=[
+    ['Status', statusChip],
+    ['Komoditas', esc(row.komoditas||'—')],
+    ['Luas WIUP', row.luas_ha!=null?fmt.num(row.luas_ha)+' Ha':'—'],
+    ['Kabupaten', esc(row.lokasi||'—')],
+    ['Nomor SK IUP', esc(row.nomor_sk||'—')],
+    ['Tanggal Mulai', fmt.date(row.tgl_mulai)],
+    ['Tanggal Berakhir', berakhir],
+  ];
+  $('#detail-title').textContent=row.nama||'Detail IUP';
+  $('#detail-sub').innerHTML=`${esc(row.komoditas||'—')} &middot; ${esc(row.lokasi||'—')}`;
+  $('#detail-body').innerHTML=def.map(([l,v])=>`<div class="dt-row"><span class="dt-l">${l}</span><span class="dt-v">${v}</span></div>`).join('');
+  $('#m-detail').classList.add('open');
+}
+$('#detail-close').addEventListener('click',()=>$('#m-detail').classList.remove('open'));
+$('#m-detail').addEventListener('click',e=>{if(e.target.id==='m-detail')$('#m-detail').classList.remove('open');});
+$('#detail-edit').addEventListener('click',()=>{if(!isAdmin()||detailId==null)return;$('#m-detail').classList.remove('open');openEdit(detailId);});
+$('#detail-del').addEventListener('click',()=>{if(!isAdmin()||detailId==null)return;$('#m-detail').classList.remove('open');openDel(detailId);});
+
+// ============================================================
 // UPLOAD EXCEL
 // ============================================================
 let uploadedSheets={};
@@ -1557,11 +1840,21 @@ function mapRows(rows){
     return obj;
   });
 }
+function validateMapped(rawRows, mapped){
+  const empties = mapped.filter(m=>Object.values(m).every(v=>v==null||v===''||v==='IUP OP'||v==='IUP Ekspl.')).length;
+  const kolomTab = TABS[S.tab].fields.filter(f=>!f.hidden).map(f=>f.k.toLowerCase().replace(/[\s_]/g,''));
+  const kolomFile = Object.keys(rawRows[0]||{}).map(k=>k.toLowerCase().replace(/[\s_]/g,''));
+  const cocok = kolomTab.filter(k=>kolomFile.includes(k)).length;
+  return { empties, cocok };
+}
 $('#u-replace').addEventListener('click',async()=>{
   if(!isAdmin()) return;
   const sheet=$('#ssheet').value, rows=uploadedSheets[sheet];
   if(!rows?.length){toast('Tidak ada data','e');return;}
   const mapped=mapRows(rows);
+  const v=validateMapped(rows,mapped);
+  if(v.cocok===0){toast('Tidak ada kolom file yang cocok dengan tabel ini. Periksa pilihan sheet/tab.','e');return;}
+  if(!confirm(`GANTI SEMUA data "${TABS[S.tab].label}"?\n\nSeluruh data lama akan DIHAPUS dan diganti ${mapped.length} baris baru.`+(v.empties?`\n\n⚠ ${v.empties} baris tampak kosong (kolom tidak terpetakan).`:''))) return;
   $('#u-replace').disabled=true;$('#u-replace').textContent='Menyimpan…';
   try{
     await truncateAndInsert(S.tab,mapped);
@@ -1577,6 +1870,17 @@ $('#u-append').addEventListener('click',async()=>{
   const sheet=$('#ssheet').value, rows=uploadedSheets[sheet];
   if(!rows?.length){toast('Tidak ada data','e');return;}
   const mapped=mapRows(rows);
+  const v=validateMapped(rows,mapped);
+  if(v.cocok===0){toast('Tidak ada kolom file yang cocok dengan tabel ini. Periksa pilihan sheet/tab.','e');return;}
+  // Deteksi kemungkinan duplikat terhadap data yang sudah ada
+  const existing=getData(S.tab);
+  const keyOf=r=>((r.nama||r.pemegang_iup||'')+'|'+(r.nomor_sk||r.no_deposito||'')+'|'+(r.tahun_jaminan||'')).toLowerCase().trim();
+  const existKeys=new Set(existing.map(keyOf));
+  const dupes=mapped.filter(m=>existKeys.has(keyOf(m))).length;
+  let msg=`Tambahkan ${mapped.length} baris ke "${TABS[S.tab].label}"?`;
+  if(dupes) msg+=`\n\n⚠ ${dupes} baris tampak SAMA dengan data yang sudah ada (berpotensi ganda).`;
+  if(v.empties) msg+=`\n\n⚠ ${v.empties} baris tampak kosong (kolom tidak terpetakan).`;
+  if((dupes||v.empties) && !confirm(msg)) return;
   $('#u-append').disabled=true;$('#u-append').textContent='Menyimpan…';
   try{
     await upsertMany(S.tab,mapped);
@@ -1615,12 +1919,29 @@ $('#btn-export').addEventListener('click',()=>{
   toast(`Export ${rows.length} baris berhasil`,'s');
 });
 
+// Backup seluruh data (semua tabel) ke satu workbook
+$('#btn-backup').addEventListener('click',()=>{
+  const wb=XLSX.utils.book_new();
+  const sheets=[['IUP',DB.iup],['Reklamasi_OP',DB.reklamasi_op],['Reklamasi_EKS',DB.reklamasi_eks]];
+  const drive=Object.entries(DRIVE).map(([pemegang_iup,drive_url])=>({pemegang_iup,drive_url}));
+  if(drive.length) sheets.push(['Drive_Links',drive]);
+  let total=0;
+  sheets.forEach(([name,data])=>{
+    const ws=XLSX.utils.json_to_sheet(data.length?data:[{info:'(kosong)'}]);
+    XLSX.utils.book_append_sheet(wb,ws,name.substring(0,31));
+    total+=data.length;
+  });
+  XLSX.writeFile(wb,`backup_reklamasi_${new Date().toISOString().slice(0,10)}.xlsx`);
+  toast(`Backup selesai — ${total} baris dari ${sheets.length} tabel`,'s');
+});
+
 // ============================================================
 // REFRESH UI
 // ============================================================
 function refreshUI(){
   updateKPIs();
   buildCharts();
+  buildAttention();
   buildFilters();
   renderTable();
 }
@@ -1705,11 +2026,11 @@ function printEks(e, nama) {
     const noSK = rlist.find(r=>r.no_sk_pengesahan)?.no_sk_pengesahan || '—';
     const rencana = sumRencanaDedup(rlist);
     if (periodeLabel) {
-      rowsHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${periodeLabel} <span style="font-weight:400;color:#475569;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${dokRR}</strong></span> <span style="font-weight:400;color:#475569;margin-left:12px;">No SK: ${noSK}</span> <span style="font-weight:400;color:#475569;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
+      rowsHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${esc(periodeLabel)} <span style="font-weight:400;color:#475569;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${esc(dokRR)}</strong></span> <span style="font-weight:400;color:#475569;margin-left:12px;">No SK: ${esc(noSK)}</span> <span style="font-weight:400;color:#475569;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
     }
     rlist.forEach((r,i) => {
       const sudah = r.no_deposito && r.jumlah_jaminan;
-      rowsHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${r.dokumen||'—'}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${r.keterangan||''}</td></tr>`;
+      rowsHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${esc(r.tahun_jaminan||'—')}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito?esc(r.no_deposito):'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${esc(r.nama_bank||'—')}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${esc(r.dokumen||'—')}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${esc(r.keterangan||'')}</td></tr>`;
     });
   };
 
@@ -1717,9 +2038,10 @@ function printEks(e, nama) {
   else renderRows(rows, null);
   if (noPeriode.length && periodes.length) renderRows(noPeriode, '(Periode tidak diisi)');
 
-  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #2563eb;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#2563eb,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${nama}</div><div class="co-sub">Laporan Reklamasi & Jaminan Eksplorasi · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP Eksplorasi'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi Eksplorasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${rowsHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
+  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#0d9488);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #0d9488;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#0d9488,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#0d9488;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${esc(nama)}</div><div class="co-sub">Laporan Reklamasi & Jaminan Eksplorasi · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP Eksplorasi'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi Eksplorasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${rowsHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
 
   const w = window.open('', '_blank', 'width=1100,height=800');
+  if (!w) { toast('Popup diblokir browser. Izinkan popup untuk mencetak.', 'e'); return; }
   w.document.write(html);
   w.document.close();
 }
@@ -1733,23 +2055,26 @@ function printCompany(e, nama) {
   const tr = sumRencanaDedup(rows);
   const pct = tr>0?(tj/tr*100).toFixed(1)+'%':'—';
   const periodes = [...new Set(rows.map(r=>r.periode_ke).filter(Boolean))].sort();
+  const noPeriode = rows.filter(r=>!r.periode_ke);
 
   let periodeHtml = '';
-  periodes.forEach(p => {
-    const pRows = rows.filter(r=>r.periode_ke==p);
+  const renderPeriodeBlock = (pRows, periodeLabel) => {
     const dokRR = pRows.find(r=>r.dokumen)?.dokumen || '—';
     const noSK = pRows.find(r=>r.no_sk_pengesahan)?.no_sk_pengesahan || '—';
     const rencana = sumRencanaDedup(pRows);
-    periodeHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${p} <span style="font-weight:400;color:#6b7280;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${dokRR}</strong></span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">No SK: ${noSK}</span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
+    periodeHtml += `<tr style="background:#f0f4f8;"><td colspan="6" style="padding:8px 12px;font-weight:600;font-size:12px;color:#0f172a;border-bottom:1px solid #cbd5e1;">Periode: ${esc(periodeLabel)} <span style="font-weight:400;color:#6b7280;margin-left:12px;">Dok RR: <strong style="color:${dokRR==='Ada'?'#059669':'#dc2626'}">${esc(dokRR)}</strong></span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">No SK: ${esc(noSK)}</span> <span style="font-weight:400;color:#6b7280;margin-left:12px;">Rencana: <strong>${new Intl.NumberFormat('id-ID').format(rencana)}</strong></span></td></tr>`;
     pRows.forEach((r,i) => {
       const sudah = r.no_deposito && r.jumlah_jaminan;
-      periodeHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${r.tahun_jaminan||'—'}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito||'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${r.nama_bank||'—'}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${r.dokumen||'—'}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${r.keterangan||''}</td></tr>`;
+      periodeHtml += `<tr style="background:${i%2===0?'#fff':'#f8fafc'}"><td style="padding:7px 12px;color:#6b7280;font-family:monospace;font-size:11px;">${esc(r.tahun_jaminan||'—')}</td><td style="padding:7px 12px;font-family:monospace;font-size:11px;">${r.no_deposito?esc(r.no_deposito):'<span style="color:#dc2626">Belum</span>'}</td><td style="padding:7px 12px;font-size:11px;">${esc(r.nama_bank||'—')}</td><td style="padding:7px 12px;text-align:right;font-family:monospace;font-size:11px;color:${sudah?'#1f2937':'#dc2626'}">${r.jumlah_jaminan?new Intl.NumberFormat('id-ID').format(r.jumlah_jaminan):'Belum ditempatkan'}</td><td style="padding:7px 12px;font-size:11px;color:${r.dokumen==='Ada'?'#059669':'#dc2626'}">${esc(r.dokumen||'—')}</td><td style="padding:7px 12px;font-size:11px;color:#9ca3af">${esc(r.keterangan||'')}</td></tr>`;
     });
-  });
+  };
+  periodes.forEach(p => renderPeriodeBlock(rows.filter(r=>r.periode_ke==p), p));
+  if (noPeriode.length) renderPeriodeBlock(noPeriode, '(Periode tidak diisi)');
 
-  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#2563eb);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #2563eb;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#2563eb,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#2563eb;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${nama}</div><div class="co-sub">Laporan Reklamasi & Jaminan · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP OP'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${periodeHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
+  const html = `<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Laporan Jaminan Reklamasi — ${nama}</title><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"><style>*{margin:0;padding:0;box-sizing:border-box;}body{font-family:'Inter',sans-serif;font-size:13px;color:#1f2937;background:#fff;padding:32px 40px;-webkit-print-color-adjust:exact;print-color-adjust:exact;}@media print{body{padding:16px 20px;}@page{size:A4 landscape;margin:15mm;}.no-print{display:none;}*{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important;}}.header-band{background:linear-gradient(135deg,#1e3a5f,#0d9488);color:#fff;border-radius:8px;padding:18px 22px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}.co-name{font-size:18px;font-weight:700;margin-bottom:3px;}.co-sub{font-size:11px;opacity:.7;}.badge-iup{background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);border-radius:5px;padding:3px 8px;font-size:10.5px;font-weight:500;}.section-title{font-size:13px;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:2px solid #0d9488;color:#1e3a5f;}table{width:100%;border-collapse:collapse;margin-bottom:16px;font-size:11.5px;}thead tr{background:#1e3a5f;color:#fff;}thead th{padding:8px 12px;text-align:left;font-size:9.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:500;}thead th:nth-child(4){text-align:right;}tbody tr{border-bottom:1px solid #e5e7eb;}.summary-bar{background:#eff6ff;border:1px solid #bfdbfe;border-radius:8px;padding:12px 18px;display:flex;gap:28px;margin-top:6px;}.sum-item{display:flex;flex-direction:column;gap:2px;}.sum-label{font-size:9.5px;color:#6b7280;letter-spacing:.05em;text-transform:uppercase;}.sum-val{font-size:15px;font-weight:700;}.progress-wrap{margin-top:12px;}.progress-label{display:flex;justify-content:space-between;font-size:10.5px;color:#6b7280;margin-bottom:3px;}.progress-bg{background:#e5e7eb;border-radius:3px;height:8px;overflow:hidden;}.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#0d9488,#38bdf8);}.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e5e7eb;font-size:10px;color:#9ca3af;display:flex;justify-content:space-between;}.btn-print{background:#0d9488;color:#fff;border:none;border-radius:6px;padding:8px 16px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;margin-bottom:16px;}</style></head><body><button class="btn-print no-print" onclick="window.print()">Cetak / Simpan PDF</button><div class="header-band"><div><div class="co-name">${esc(nama)}</div><div class="co-sub">Laporan Reklamasi & Jaminan · Dinas ESDM Aceh</div></div><div style="text-align:right;"><div class="badge-iup">${iupInfo.status_iup||'IUP OP'}</div><div style="font-size:10.5px;opacity:.65;margin-top:4px;">${iupInfo.lokasi||''} · ${iupInfo.komoditas||''}</div><div style="font-size:10.5px;opacity:.55;margin-top:2px;">${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}</div></div></div>${iupInfo.nomor_sk?`<div style="background:#fffbeb;border:1px solid #fde68a;border-radius:5px;padding:7px 12px;margin-bottom:14px;font-size:11px;color:#92400e;">Nomor SK IUP: <strong>${iupInfo.nomor_sk}</strong></div>`:''}<div class="section-title">Detail Rencana & Jaminan Reklamasi</div><table><thead><tr><th>Tahun Jaminan</th><th>No Deposito</th><th>Bank</th><th style="text-align:right">Jaminan (Rp)</th><th>Dok RR</th><th>Keterangan</th></tr></thead><tbody>${periodeHtml}</tbody></table><div class="summary-bar"><div class="sum-item"><span class="sum-label">Total Rencana</span><span class="sum-val">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tr)}</span></div><div class="sum-item"><span class="sum-label">Total Jaminan</span><span class="sum-val" style="color:#059669">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(tj)}</span></div><div class="sum-item"><span class="sum-label">Belum Ditempatkan</span><span class="sum-val" style="color:${tr-tj>0?'#dc2626':'#059669'}">${new Intl.NumberFormat('id-ID',{style:'currency',currency:'IDR',maximumFractionDigits:0}).format(Math.max(0,tr-tj))}</span></div><div class="sum-item"><span class="sum-label">Realisasi</span><span class="sum-val" style="color:${parseFloat(pct)>=100?'#059669':'#d97706'}">${pct}</span></div></div><div class="progress-wrap"><div class="progress-label"><span>Realisasi Jaminan</span><span>${pct}</span></div><div class="progress-bg"><div class="progress-fill" style="width:${Math.min(100,tr>0?tj/tr*100:0)}%"></div></div></div><div class="footer"><span>Dinas ESDM Aceh · Dashboard Reklamasi Tambang</span><span>Dicetak: ${new Date().toLocaleString('id-ID')}</span></div></body></html>`;
 
   const w = window.open('', '_blank', 'width=1100,height=800');
+  if (!w) { toast('Popup diblokir browser. Izinkan popup untuk mencetak.', 'e'); return; }
   w.document.write(html);
   w.document.close();
 }
