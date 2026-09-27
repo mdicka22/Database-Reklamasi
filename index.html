@@ -778,6 +778,10 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
       <span class="side-ico"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M16.5 16.5L21 21" stroke-width="2"/><path d="M8 11h6M11 8v6"/></svg></span>
       <span>Jaminan Eksplorasi</span>
     </button>
+    <button class="side-link" data-view="data" data-tab="pascatambang">
+      <span class="side-ico"><svg viewBox="0 0 24 24"><path d="M3 20h18M5 20l4-12 4 7 3-4 3 9"/><path d="M9 8l3-5 3 5"/></svg></span>
+      <span>Pascatambang</span>
+    </button>
   </nav>
   <div class="side-user">
     <div class="avatar" id="user-avatar">A</div>
@@ -791,7 +795,7 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
   <div class="hbrand">
     <div>
       <h1>Database Minerba <em>Aceh</em></h1>
-      <div class="sub">Data IUP dan jaminan reklamasi</div>
+      <div class="sub">IUP, reklamasi, dan pascatambang</div>
     </div>
   </div>
   <div class="hmeta">
@@ -878,6 +882,7 @@ tr.group-header.expiring td{animation:pulseWarn 2.5s ease-in-out infinite;}
   <button class="tab" data-tab="iup_eks">IUP Eksplorasi <span class="badge" id="tc-eks">—</span></button>
   <button class="tab" data-tab="rek_op">Rencana &amp; Jaminan OP <span class="badge" id="tc-rop">—</span></button>
   <button class="tab" data-tab="rek_eks">Rencana &amp; Jaminan EKS <span class="badge" id="tc-reks">—</span></button>
+  <button class="tab" data-tab="pascatambang">Pascatambang <span class="badge" id="tc-pasca">—</span></button>
 </div>
 <div class="toolbar">
   <div class="tl" id="filters"></div>
@@ -1151,7 +1156,8 @@ function isAdmin() { return USER_ROLE === 'admin'; }
 // ============================================================
 // IN-MEMORY CACHE
 // ============================================================
-const DB = { iup: [], reklamasi_op: [], reklamasi_eks: [] };
+const DB = { iup: [], reklamasi_op: [], reklamasi_eks: [], pascatambang: [] };
+let pascaTableAvailable = true;
 const DRIVE = {}; // pemegang_iup → drive_url
 
 // ============================================================
@@ -1206,15 +1212,17 @@ function updateLastSync() {
 function getTable(tab) {
   if(tab==='iup_all'||tab==='iup_op'||tab==='iup_eks') return 'iup';
   if(tab==='rek_op') return 'reklamasi_op';
+  if(tab==='pascatambang') return 'pascatambang';
   return 'reklamasi_eks';
 }
 
 async function fetchAll() {
-  const [r1, r2, r3, r4] = await Promise.all([
+  const [r1, r2, r3, r4, r5] = await Promise.all([
     sb.from('iup').select('*').order('id'),
     sb.from('reklamasi_op').select('*').order('id'),
     sb.from('reklamasi_eks').select('*').order('id'),
     sb.from('drive_links').select('pemegang_iup,drive_url'),
+    sb.from('pascatambang').select('*').order('id'),
   ]);
   if (r1.error) throw r1.error;
   if (r2.error) throw r2.error;
@@ -1222,6 +1230,9 @@ async function fetchAll() {
   DB.iup          = r1.data;
   DB.reklamasi_op = r2.data;
   DB.reklamasi_eks= r3.data;
+  pascaTableAvailable = !r5.error;
+  DB.pascatambang = r5.error ? [] : r5.data;
+  if (r5.error) console.warn('Tabel pascatambang belum tersedia:', r5.error.message);
   Object.keys(DRIVE).forEach(k=>delete DRIVE[k]);
   if (r4.data) r4.data.forEach(d => DRIVE[d.pemegang_iup] = d.drive_url);
   updateLastSync();
@@ -1232,7 +1243,7 @@ const _ls = {
   get(k) { try { const r=localStorage.getItem(k); return r?JSON.parse(r):null; } catch(e) { return null; } },
   set(k,v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch(e) {} },
 };
-function saveCache() { _ls.set(CACHE_KEY, {ts: Date.now(), data: {iup:DB.iup, reklamasi_op:DB.reklamasi_op, reklamasi_eks:DB.reklamasi_eks}}); }
+function saveCache() { _ls.set(CACHE_KEY, {ts: Date.now(), data: {iup:DB.iup, reklamasi_op:DB.reklamasi_op, reklamasi_eks:DB.reklamasi_eks, pascatambang:DB.pascatambang}}); }
 function loadCache() { return _ls.get(CACHE_KEY); }
 
 function showApp() {
@@ -1320,6 +1331,7 @@ function getData(tab) {
   if(tab==='iup_eks') return DB.iup.filter(x=>x.status_iup==='IUP Ekspl.');
   if(tab==='rek_op')  return DB.reklamasi_op;
   if(tab==='rek_eks') return DB.reklamasi_eks;
+  if(tab==='pascatambang') return DB.pascatambang;
   return [];
 }
 
@@ -1398,6 +1410,14 @@ const TABS = {
     const pct=r>0?(j/r*100).toFixed(1).replace('.',',')+' %':'—';
     return`Jaminan: <strong>${fmt.rpS(j)}</strong> &middot; Rencana: <strong>${fmt.rpS(r)}</strong> &middot; <strong>${pct}</strong>`;
   }},
+  pascatambang:{label:'Pascatambang',fields:[
+    {k:'pemegang_iup',l:'Pemegang IUP',type:'text',w:'220px',sort:1},
+    {k:'no_sk_pengesahan',l:'No. SK Pengesahan',type:'text',w:'150px',sort:1},
+    {k:'jumlah_rencana',l:'Rencana (Rp)',type:'number',w:'145px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'jumlah_jaminan',l:'Jaminan (Rp)',type:'number',w:'145px',sort:1,cls:'num',render:v=>v!=null?fmt.num(v):'—'},
+    {k:'status_jaminan',l:'Status',type:'text',w:'260px',sort:1},
+  ],filters:['status_jaminan'],searchKeys:['pemegang_iup','no_sk_pengesahan','status_jaminan'],
+  summary:rows=>`Rencana: <strong>${fmt.rpS(rows.reduce((s,x)=>s+(x.jumlah_rencana||0),0))}</strong> &middot; Jaminan: <strong>${fmt.rpS(rows.reduce((s,x)=>s+(x.jumlah_jaminan||0),0))}</strong>`},
 };
 
 // ============================================================
@@ -1458,6 +1478,7 @@ function updateKPIs() {
   $('#tc-eks').textContent=iup.filter(x=>x.status_iup==='IUP Ekspl.').length;
   $('#tc-rop').textContent=rop.length;
   $('#tc-reks').textContent=reks.length;
+  $('#tc-pasca').textContent=DB.pascatambang.length;
 }
 
 let charts=[];
@@ -1629,7 +1650,10 @@ function renderTable(){
   const totalPages = cfg.grouped ? 0 : Math.ceil(sorted.length / PAGE_SIZE);
 
   if(!sorted.length){
-    body=`<tbody><tr><td colspan="${cols.length+(showActionsCol?1:0)}"><div class="empty"><div class="big">Tidak ada data</div><div>Ubah filter atau tambah data baru</div></div></td></tr></tbody>`;
+    const emptyText = S.tab==='pascatambang'&&!pascaTableAvailable
+      ? 'Tabel Pascatambang belum tersedia di database. Jalankan skrip impor terlebih dahulu.'
+      : 'Ubah filter atau tambah data baru';
+    body=`<tbody><tr><td colspan="${cols.length+(showActionsCol?1:0)}"><div class="empty"><div class="big">Tidak ada data</div><div>${emptyText}</div></div></td></tr></tbody>`;
   } else if(cfg.grouped){
     body=buildGroupedBody(sorted,cols,showActions);
   } else {
@@ -1935,8 +1959,11 @@ $('#side-nav').addEventListener('click',e=>{
 // ============================================================
 // ADD / EDIT
 // ============================================================
+function activeRows(){
+  return DB[getTable(S.tab)];
+}
 function getRowById(id){
-  const arr=S.tab==='rek_op'?DB.reklamasi_op:S.tab==='rek_eks'?DB.reklamasi_eks:DB.iup;
+  const arr=activeRows();
   return arr.find(r=>r.id===id);
 }
 
@@ -2016,13 +2043,13 @@ $('#m-save').addEventListener('click',async()=>{
   try{
     if(S.editId!==null){
       await updateRow(S.tab,S.editId,obj);
-      const arr=S.tab==='rek_op'?DB.reklamasi_op:S.tab==='rek_eks'?DB.reklamasi_eks:DB.iup;
+      const arr=activeRows();
       const i=arr.findIndex(r=>r.id===S.editId);
       if(i>=0)Object.assign(arr[i],obj);
       toast('Data berhasil diperbarui','s');
     } else {
       const newRow=await insertRow(S.tab,obj);
-      const arr=S.tab==='rek_op'?DB.reklamasi_op:S.tab==='rek_eks'?DB.reklamasi_eks:DB.iup;
+      const arr=activeRows();
       arr.push(newRow);
       toast('Data baru berhasil ditambahkan','s');
     }
@@ -2054,7 +2081,7 @@ $('#d-confirm').addEventListener('click',async()=>{
   $('#d-confirm').disabled=true;$('#d-confirm').textContent='Menghapus…';
   try{
     await deleteRow(S.tab,delId);
-    const arr=S.tab==='rek_op'?DB.reklamasi_op:S.tab==='rek_eks'?DB.reklamasi_eks:DB.iup;
+    const arr=activeRows();
     const i=arr.findIndex(r=>r.id===delId);
     if(i>=0)arr.splice(i,1);
     $('#m-del').classList.remove('open');delId=null;
@@ -2249,7 +2276,7 @@ $('#btn-export').addEventListener('click',()=>{
 // Backup seluruh data (semua tabel) ke satu workbook
 $('#btn-backup').addEventListener('click',()=>{
   const wb=XLSX.utils.book_new();
-  const sheets=[['IUP',DB.iup],['Reklamasi_OP',DB.reklamasi_op],['Reklamasi_EKS',DB.reklamasi_eks]];
+  const sheets=[['IUP',DB.iup],['Reklamasi_OP',DB.reklamasi_op],['Reklamasi_EKS',DB.reklamasi_eks],['Pascatambang',DB.pascatambang]];
   const drive=Object.entries(DRIVE).map(([pemegang_iup,drive_url])=>({pemegang_iup,drive_url}));
   if(drive.length) sheets.push(['Drive_Links',drive]);
   let total=0;
@@ -2291,6 +2318,7 @@ async function startApp() {
     DB.iup          = cache.data.iup;
     DB.reklamasi_op = cache.data.reklamasi_op;
     DB.reklamasi_eks= cache.data.reklamasi_eks;
+    DB.pascatambang = cache.data.pascatambang || [];
     refreshUI();
     showApp();
     setConnStatus(true, 'MEMPERBARUI…');
